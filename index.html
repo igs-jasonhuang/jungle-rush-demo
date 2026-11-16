@@ -225,7 +225,7 @@
         <tr><td>直升機・3連射</td><td>頭獎級</td><td class="mult30">×35</td><td>2.57%</td><td>3,500</td></tr>
       </table>
       <div class="rule">
-        操作：<b>A D</b> 移動（<b>連點兩下同方向＝跑步</b>）｜<b>W</b> 跳躍｜<b>S</b> 蹲下（可閃子彈）｜<b>滑鼠瞄準，按住左鍵連射</b>（空白鍵也可）｜<b>右鍵＝小刀</b><br>
+        操作：<b>A D</b> 移動（<b>連點兩下同方向＝跑步</b>）｜<b>W／空白鍵</b> 跳躍｜<b>S</b> 蹲下（可閃子彈）｜<b>滑鼠瞄準，按住左鍵連射</b>｜<b>右鍵＝小刀</b><br>
         其他：<b>Tab</b> 統計｜<b>V</b> 武器資料表｜<b>L</b> 排行榜｜<b>P</b> 暫停｜<b>R</b> 重新開始（換新地圖）｜<b>M</b> 音效
       </div>
       <button id="startBtn">開始試玩</button>
@@ -233,7 +233,7 @@
   </div>
 
 </div>
-<div id="hint">A D 移動（連點兩下＝跑步）　W 跳躍　S 蹲下　滑鼠瞄準・左鍵射擊・右鍵小刀　Tab統計　V武器表　L排行榜　P暫停　R重來　M音效</div>
+<div id="hint">A D 移動（連點兩下＝跑步）　W／空白 跳躍　S 蹲下　滑鼠瞄準・左鍵射擊・右鍵小刀　Tab統計　V武器表　L排行榜　P暫停　R重來　M音效</div>
 </div>
 
 <script>
@@ -852,7 +852,7 @@ function updatePlayer(dt){
   if(!player.onGround){
     // 上升輕、下落重；提早放開 W 跳得矮（好控制）
     let g = player.vy<0 ? GRAV_UP : GRAV_DOWN;
-    if(player.vy<0 && !(keys['w']||keys['arrowup'])) g+=GRAV_UP*1.2;
+    if(player.vy<0 && !(keys['w']||keys['arrowup']||keys[' '])) g+=GRAV_UP*1.2;
     player.vy=Math.min(FALL_MAX,player.vy+g*dt);
     const ny=player.y+player.vy*dt;
     if(player.vy>0){
@@ -2362,9 +2362,9 @@ window.addEventListener('keydown',ev=>{
     lastTapDir=dir; lastTapT=nowT;
   }
   // 跳躍採邊緣觸發＋緩衝（落地前按也算）
-  if(!ev.repeat && (k==='w'||k==='arrowup')) jumpBufT=JUMP_BUF;
+  if(!ev.repeat && (k==='w'||k==='arrowup'||k===' ')) jumpBufT=JUMP_BUF;   // 空白鍵＝跳躍
   keys[k]=true;
-  if(k===' '){ ev.preventDefault(); firingKey=true; }
+  if(k===' ') ev.preventDefault();   // 空白鍵改跳躍：只擋網頁捲動
   if(k==='tab'){ ev.preventDefault(); toggleStats(); }
   if(k==='v') toggleWpn();
   if(k==='o') toggleParam();
@@ -2379,7 +2379,6 @@ window.addEventListener('keydown',ev=>{
 });
 window.addEventListener('keyup',ev=>{
   const k=ev.key.toLowerCase(); keys[k]=false;
-  if(k===' ') firingKey=false;
 });
 const statsBox=document.getElementById('stats');
 function toggleStats(){ statsBox.style.display = statsBox.style.display==='block'?'none':'block'; }
