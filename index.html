@@ -291,7 +291,7 @@
       <p>．<b class="k">操作</b>：<span class="pcHint"><b>A D</b> 移動｜<b>W／空白鍵</b> 跳躍（<b>可二段跳</b>）｜<b>滑鼠瞄準＋左鍵射擊</b>｜<b>右鍵</b>＝小刀</span><span class="tcHint" style="display:none"><b>左下搖桿</b>移動（往下拉＝蹲下）｜右側按鈕<b>跳躍（可二段跳）／射擊／小刀</b>｜<b>手指點畫面</b>＝瞄準</span></p>
       <p>．<b class="k">每注口徑</b>：初始金幣 <b>20,000</b>、每注 <b>100</b>；打中敵人＝一次抽獎：中獎機率＝<b>90%÷倍率</b>、中獎金額＝<b>100×倍率</b>。</p>
       <p>．<b class="k">闖關</b>：全長 30 個畫面（2,880m），<b>地形每局隨機</b>（多種組塊拼成、同一局不重複）；敵人靠近半個畫面才啟動。終點是 <b>BOSS 房</b>：進房封路、擊破 BOSS 才過關。</p>
-      <p>．<b class="k">愛心</b>：❤×3，中彈／碰敵／掉坑 −1❤；歸零可選「從紀錄點（路牌）繼續」，關卡進度過半還能<b>「留名青史」</b>上排行榜；重生時畫面內不留敵人。</p>
+      <p>．<b class="k">愛心</b>：❤×3，中彈／碰敵／掉坑 −1❤；歸零可選「從紀錄點（路牌）繼續」，或<b>「留名青史」</b>把本局成績留上排行榜（留名後本局結束回大廳）；重生時畫面內不留敵人。</p>
       <p>．<b class="k">人質</b>：路上喊 <b>HELP!</b> 的金髮大鬍大叔，碰到會放下寶箱，隨機開出 <b>❤上限+1並補滿／S 散彈槍／F 火焰槍／G 榴彈／R 火箭炮</b>（彈藥用完自動換回步槍）。</p>
       <p>．<b class="k">隱藏寶箱</b>：偶爾有<b>半埋土裡的寶箱</b>——用<b>小刀</b>砍開有好料。</p>
       <p>．<b class="k">小刀</b>：滑鼠右鍵朝準心方向<b>半月劈砍</b>（攻擊力×10、冷卻 0.5 秒）；<b>砍中才扣 100</b>，揮空不扣幣。小心：步兵也會跳過來砍你。</p>
@@ -317,7 +317,7 @@
   </div></div>
 
 </div>
-<div id="hint">A D 移動（連點兩下＝跑步）　W／空白 跳躍(二段)　S 蹲下　滑鼠瞄準・左鍵射擊・右鍵小刀　Tab統計　L排行榜　P暫停　R重來　M音效</div>
+<div id="hint">A D 移動（連點兩下＝跑步）　W／空白 跳躍(二段)　S 蹲下　滑鼠瞄準・左鍵射擊・右鍵小刀　Tab統計　L排行榜　P暫停　M音效</div>
 </div>
 
 <script>
@@ -2586,10 +2586,7 @@ window.addEventListener('keydown',ev=>{
   if(k==='o') toggleParam();
   if(k==='l'&&!dlgHold) openBoard('view');
   if(k==='p') paused=!paused;
-  if(k==='r'){   // 防誤按：1.5 秒內按兩次才重來
-    if(performance.now()-rConfirmT<1500){ rConfirmT=0; fullReset(); flashMsg('已重新開始（換新地圖；金幣與統計歸零）','#cfe6ff',1.4); }
-    else{ rConfirmT=performance.now(); flashMsg('再按一次 R 確認全部重來','#ffd84d',1.4); }
-  }
+  // （v24：R 鍵重置已移除，防玩家誤按；重開一局＝回選關重選）
   if(k==='m') toggleSnd();
   if(k==='arrowup'||k==='arrowdown') ev.preventDefault();
 });
@@ -2659,9 +2656,8 @@ function openDeathDlg(mode){
     '關卡進度 <b style="color:#ffd84d">'+fmt(runDist)+'m（'+pct+'%）</b>｜'+
     '押注 '+fmt(stats.totalBet)+'｜贏分 '+fmt(stats.totalWin);
   const fb=document.getElementById('ddFame');
-  const ok50=runDist>=TOTAL_M*0.5;
-  fb.disabled=!ok50||registered;
-  fb.textContent= registered?'本局已登錄':(ok50?'留名青史':'留名青史（需關卡進度 50%）');
+  fb.disabled=registered;                              // v24：取消 50% 門檻，隨時可留名
+  fb.textContent= registered?'本局已登錄':'留名青史';
   document.getElementById('ddNameRow').style.display='none';
   document.getElementById('ddErr').textContent='';
   deathDlg.style.display='flex';
