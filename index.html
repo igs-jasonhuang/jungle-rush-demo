@@ -99,7 +99,7 @@
     background:rgba(10,12,6,.9); }
   #levelPanel h2{ position:absolute; top:3%; left:0; right:0; text-align:center; color:var(--gold);
     font-size:30px; margin:0; letter-spacing:5px; text-shadow:0 2px 8px #000; }
-  #lvPath{ position:absolute; inset:0; width:100%; height:100%; }
+  #lvPath{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }   /* 裝飾層：不吃點擊 */
   #lvBack{ position:absolute; left:14px; top:12px; }
   #lvTop{ position:absolute; right:16px; top:12px; display:flex; gap:8px; align-items:center; }
   #lvTop .btn{ pointer-events:auto; }
@@ -289,13 +289,13 @@
     <div id="helpBody">
       <p>．<b class="k">目標</b>：一路往右推進 2,880m 到終點。<b>每發子彈 −100 金幣＝一次抽獎</b>，打倒敵人贏金幣、倍率越高越大獎。</p>
       <p>．<b class="k">操作</b>：<span class="pcHint"><b>A D</b> 移動｜<b>W／空白鍵</b> 跳躍（<b>可二段跳</b>）｜<b>滑鼠瞄準＋左鍵射擊</b>｜<b>右鍵</b>＝小刀</span><span class="tcHint" style="display:none"><b>左下搖桿</b>移動（往下拉＝蹲下）｜右側按鈕<b>跳躍（可二段跳）／射擊／小刀</b>｜<b>手指點畫面</b>＝瞄準</span></p>
-      <p>．<b class="k">每注口徑</b>：初始金幣 <b>20,000</b>、每注 <b>100</b>；打中敵人＝一次抽獎：中獎機率＝<b>90%÷倍率</b>、中獎金額＝<b>100×倍率</b>。</p>
+      <p>．<b class="k">金幣</b>：初始金幣 <b>20,000</b>、每注 <b>100</b>；打中敵人＝一次抽獎：中獎機率＝<b>90%÷倍率</b>、中獎金額＝<b>100×倍率</b>。</p>
       <p>．<b class="k">闖關</b>：全長 30 個畫面（2,880m），<b>地形每局隨機</b>（多種組塊拼成、同一局不重複）；敵人靠近半個畫面才啟動。終點是 <b>BOSS 房</b>：進房封路、擊破 BOSS 才過關。</p>
       <p>．<b class="k">愛心</b>：❤×3，中彈／碰敵／掉坑 −1❤；歸零可選「從紀錄點（路牌）繼續」，或<b>「留名青史」</b>把本局成績留上排行榜（留名後本局結束回大廳）；重生時畫面內不留敵人。</p>
       <p>．<b class="k">人質</b>：路上喊 <b>HELP!</b> 的金髮大鬍大叔，碰到會放下寶箱，隨機開出 <b>❤上限+1並補滿／S 散彈槍／F 火焰槍／G 榴彈／R 火箭炮</b>（彈藥用完自動換回步槍）。</p>
       <p>．<b class="k">隱藏寶箱</b>：偶爾有<b>半埋土裡的寶箱</b>——用<b>小刀</b>砍開有好料。</p>
       <p>．<b class="k">小刀</b>：滑鼠右鍵朝準心方向<b>半月劈砍</b>（攻擊力×10、冷卻 0.5 秒）；<b>砍中才扣 100</b>，揮空不扣幣。小心：步兵也會跳過來砍你。</p>
-      <p>．<b class="k">武器口徑</b>（攻擊力與輸贏分離）：細節見下方武器表——散彈槍 5 顆各自一注；<b>火焰槍觸敵 0.1 秒即燒</b>、每秒 −300＝3 個額度追打活口；榴彈／火箭炮爆炸由近到遠派注、沒用完退還。</p>
+      <p>．<b class="k">武器</b>：細節見下方武器表——散彈槍 5 顆各自一注；<b>火焰槍觸敵 0.1 秒即燒</b>、每秒 −300＝3 個額度追打活口；榴彈／火箭炮爆炸由近到遠派注、沒用完退還。</p>
       <table id="wpnTbl">
         <tr><th>武器</th><th>消耗</th><th>攻擊力</th><th>下注</th></tr>
         <tbody id="wpnRows2"></tbody>
