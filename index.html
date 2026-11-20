@@ -101,6 +101,12 @@
     font-size:30px; margin:0; letter-spacing:5px; text-shadow:0 2px 8px #000; }
   #lvPath{ position:absolute; inset:0; width:100%; height:100%; }
   #lvBack{ position:absolute; left:14px; top:12px; }
+  #lvTop{ position:absolute; right:16px; top:12px; display:flex; gap:8px; align-items:center; }
+  #lvTop .btn{ pointer-events:auto; }
+  #lvCoins{ color:var(--gold); font-weight:bold; font-size:19px; margin-right:8px; text-shadow:0 1px 3px #000; }
+  #cheatIn{ width:300px; font-size:17px; background:#2c3222; color:#ffe89a; border:1px solid #556048;
+    border-radius:4px; padding:7px 10px; }
+  #cheatMsg{ margin-top:10px; min-height:22px; color:#ffe89a; font-size:15.5px; }
   .lvNode{ position:absolute; width:74px; height:74px; margin:-37px 0 0 -37px; border-radius:50%;
     display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer;
     font-weight:bold; font-size:17px; color:#f2efc9; z-index:2;
@@ -152,7 +158,7 @@
 
   <div class="hud" id="hudL">
     <div class="lab">金幣財產</div>
-    <div class="coins" id="coinTxt">10,000</div>
+    <div class="coins" id="coinTxt">20,000</div>
     <div class="sub" id="costTxt">每發子彈 −100 金幣</div>
     <div id="hearts"></div>
     <div id="wpnTxt">武器：步槍 ∞</div>
@@ -160,7 +166,7 @@
 
   <div class="hud" id="hudR">
     <div class="dist" id="distTxt">推進 0m｜最遠 0m</div>
-    <div class="gr" id="grTxt">Game Rate 90%｜全程 2,880m</div>
+    <div class="gr" id="grTxt">全程 2,880m</div>
     <div id="pb"><div id="pbFill"></div><div id="pbBest"></div></div>
   </div>
 
@@ -168,9 +174,9 @@
     <button class="btn" id="bStats">統計</button>
     <button class="btn" id="bParam">參數</button>
     <button class="btn" id="bLevels">選關</button>
-    <button class="btn" id="bHelp">說明</button>
+    <button class="btn" id="bHelp">遊戲說明</button>
     <button class="btn" id="bSnd">音效：開</button>
-    <button class="btn gold" id="bRefill">＋補幣 10,000</button>
+    <button class="btn gold" id="bCheat">金手指</button>
   </div>
 
   <div id="wpnPanel">
@@ -238,16 +244,29 @@
   </div></div>
 
   <div id="boardPanel" class="modal"><div class="box" style="min-width:720px;">
-    <h3>排行榜（依關卡進度；同進度先登錄者在前）</h3>
+    <h3>排行榜（依關卡與進度；同進度先登錄者在前）</h3>
     <table>
-      <thead><tr><th>#</th><th>名字</th><th>關卡進度</th><th>金幣押注</th><th>金幣贏分</th><th>Game Rate</th><th>登錄時間</th></tr></thead>
+      <thead><tr><th>#</th><th>名字</th><th>關卡</th><th>進度</th><th>金幣押注</th><th>金幣贏分</th><th>登錄時間</th></tr></thead>
       <tbody id="boardRows"></tbody>
     </table>
     <div class="row"><button class="btn" id="bdClose">關閉</button></div>
   </div></div>
 
+  <div id="cheatDlg" class="modal"><div class="box" style="min-width:430px">
+    <h3>金手指</h3>
+    <input id="cheatIn" placeholder="輸入指令…" autocomplete="off">
+    <div class="row"><button class="btn gold" id="cheatOk">確定</button><button class="btn" id="cheatClose">關閉</button></div>
+    <div id="cheatMsg"></div>
+  </div></div>
+
   <div id="levelPanel">
     <h2>選擇關卡</h2>
+    <div id="lvTop">
+      <span id="lvCoins"></span>
+      <button class="btn" id="lvHelp">遊戲說明</button>
+      <button class="btn" id="lvBoard">排行榜</button>
+      <button class="btn gold" id="lvCheat">金手指</button>
+    </div>
     <svg id="lvPath" viewBox="0 0 1000 420" preserveAspectRatio="none"></svg>
     <button class="btn" id="lvBack">回封面</button>
   </div>
@@ -270,16 +289,15 @@
     <div id="helpBody">
       <p>．<b class="k">目標</b>：一路往右推進 2,880m 到終點。<b>每發子彈 −100 金幣＝一次抽獎</b>，打倒敵人贏金幣、倍率越高越大獎。</p>
       <p>．<b class="k">操作</b>：<span class="pcHint"><b>A D</b> 移動｜<b>W／空白鍵</b> 跳躍（<b>可二段跳</b>）｜<b>滑鼠瞄準＋左鍵射擊</b>｜<b>右鍵</b>＝小刀</span><span class="tcHint" style="display:none"><b>左下搖桿</b>移動（往下拉＝蹲下）｜右側按鈕<b>跳躍（可二段跳）／射擊／小刀</b>｜<b>手指點畫面</b>＝瞄準</span></p>
-      <p>．<b class="k">每注口徑</b>：初始金幣 <b>10,000</b>、每注 <b>100</b>；打中敵人＝一次抽獎：中獎機率＝<b>90%÷倍率</b>、中獎金額＝<b>100×倍率</b>。按右上<b>＋補幣</b>。</p>
+      <p>．<b class="k">每注口徑</b>：初始金幣 <b>20,000</b>、每注 <b>100</b>；打中敵人＝一次抽獎：中獎機率＝<b>90%÷倍率</b>、中獎金額＝<b>100×倍率</b>。</p>
       <p>．<b class="k">闖關</b>：全長 30 個畫面（2,880m），<b>地形每局隨機</b>（多種組塊拼成、同一局不重複）；敵人靠近半個畫面才啟動。終點是 <b>BOSS 房</b>：進房封路、擊破 BOSS 才過關。</p>
       <p>．<b class="k">愛心</b>：❤×3，中彈／碰敵／掉坑 −1❤；歸零可選「從紀錄點（路牌）繼續」，關卡進度過半還能<b>「留名青史」</b>上排行榜；重生時畫面內不留敵人。</p>
       <p>．<b class="k">人質</b>：路上喊 <b>HELP!</b> 的金髮大鬍大叔，碰到會放下寶箱，隨機開出 <b>❤上限+1並補滿／S 散彈槍／F 火焰槍／G 榴彈／R 火箭炮</b>（彈藥用完自動換回步槍）。</p>
       <p>．<b class="k">隱藏寶箱</b>：偶爾有<b>半埋土裡的寶箱</b>——用<b>小刀</b>砍開有好料。</p>
-      <p>．<b class="k">雙層路</b>：部分路段有<b>跳得上去的高台</b>（台與台之間要跳躍銜接、末端收回單線）——上層常有人質，也可能有榴彈兵居高臨下。</p>
       <p>．<b class="k">小刀</b>：滑鼠右鍵朝準心方向<b>半月劈砍</b>（攻擊力×10、冷卻 0.5 秒）；<b>砍中才扣 100</b>，揮空不扣幣。小心：步兵也會跳過來砍你。</p>
       <p>．<b class="k">武器口徑</b>（攻擊力與輸贏分離）：細節見下方武器表——散彈槍 5 顆各自一注；<b>火焰槍觸敵 0.1 秒即燒</b>、每秒 −300＝3 個額度追打活口；榴彈／火箭炮爆炸由近到遠派注、沒用完退還。</p>
       <table id="wpnTbl">
-        <tr><th>武器</th><th>消耗</th><th>攻擊力</th><th>下注</th><th>運作</th></tr>
+        <tr><th>武器</th><th>消耗</th><th>攻擊力</th><th>下注</th></tr>
         <tbody id="wpnRows2"></tbody>
       </table>
       <table id="oddsTbl">
@@ -291,7 +309,7 @@
         <tr><td>盾牌兵</td><td class="mult10">×9</td><td>10%</td><td>900</td></tr>
         <tr><td>榴彈兵</td><td class="mult10">×15</td><td>6%</td><td>1,500</td></tr>
         <tr><td>戰車</td><td class="mult15">×20</td><td>4.5%</td><td>2,000</td></tr>
-        <tr><td>直升機</td><td class="mult30">×35</td><td>2.57%</td><td>3,500</td></tr>
+        <tr><td>直升機</td><td class="mult30">×30</td><td>3%</td><td>3,000</td></tr>
         <tr><td>BOSS</td><td class="qm">？</td><td class="qm">？</td><td class="qm">？</td></tr>
       </table>
     </div>
@@ -310,7 +328,7 @@
    ============================================================ */
 let GAME_RATE   = 0.90;    // 遊戲還原率：中獎機率 = GAME_RATE / 倍率
 let BET         = 100;     // 每發消耗金幣（所有武器相同）
-const START_COINS = 10000;
+const START_COINS = 20000;
 const REFILL_AMT  = 10000;
 const BULLET_SPD  = 560;     // 步槍子彈速度
 const SCREENS     = 30;      // 關卡長度（畫面寬數）
@@ -340,7 +358,7 @@ const ENEMY_TYPES = [
   { key:'shield',  name:'盾牌兵', mult:9,  hp:6,  w:40, h:46, spd:40, fly:false, fireCd:3.6, badge:'#7ed67e' },
   { key:'turret',  name:'榴彈兵', mult:15, hp:12, w:44, h:52, spd:0,  fly:false, fireCd:2.1, badge:'#6db1ff' },   // h=52：判定涵蓋砲手上半身（修「打胸口沒反應」）
   { key:'tank',    name:'戰車',   mult:20, hp:16, w:80, h:60, spd:20, fly:false, fireCd:3.8, badge:'#c58cff' },
-  { key:'heli',    name:'直升機', mult:35, hp:30, w:92, h:50, spd:40, fly:true,  fireCd:2.6, badge:'#ffd84d' },  // 攻擊＝3 連射
+  { key:'heli',    name:'直升機', mult:30, hp:30, w:92, h:50, spd:40, fly:true,  fireCd:2.6, badge:'#ffd84d' },  // 攻擊＝3 連射
   // 後段新敵種（出現門檻見 buildLevel）：快刀兵＝只用小刀、速度快；機槍兵＝5 連射
   { key:'runner',  name:'快刀兵', mult:3,  hp:2,  w:26, h:46, spd:150, fly:false, fireCd:99,  badge:'#9fe0c0' },
   { key:'mg',      name:'機槍兵', mult:6,  hp:4,  w:26, h:46, spd:40,  fly:false, fireCd:3.2, badge:'#ff9a6a' },
@@ -399,6 +417,8 @@ let LEVEL_NUM=1, levelsCleared=[], bossActive=false, bossClearT=0, clearDlgT=0, 
 const ARENA_W=1200, AX_IN=WORLD_W+120;         // BOSS 房寬度／進房觸發線（過了就封路）
 try{ levelsCleared=JSON.parse(localStorage.getItem('fishDemo_levels')||'[]'); }catch(e){}
 function saveLevels(){ try{ localStorage.setItem('fishDemo_levels',JSON.stringify(levelsCleared)); }catch(e){} }
+try{ const cw=localStorage.getItem('fishDemo_coins'); if(cw!==null) coins=Math.max(0,parseInt(cw)||0); }catch(e){}
+function saveWallet(){ try{ localStorage.setItem('fishDemo_coins',String(coins)); }catch(e){} }
 let lastShot=0, time=0, camX=0;
 let runDist=0, bestDist=0, bestDirty=false, lastSave=0;
 try{ bestDist=parseInt(localStorage.getItem('fishDemo_bestDist')||'0')||0; }catch(e){}
@@ -464,7 +484,7 @@ function flashMsg(text,color,sec){
   el.textContent=text; el.style.color=color||'#ffe0c0'; el.style.display='block';
   clearTimeout(msgT); msgT=setTimeout(()=>el.style.display='none',(sec||1.6)*1000);
 }
-function saveBest(){ try{ localStorage.setItem('fishDemo_bestDist',String(bestDist)); }catch(e){} bestDirty=false; }
+function saveBest(){ try{ localStorage.setItem('fishDemo_bestDist',String(bestDist)); }catch(e){} bestDirty=false; saveWallet(); }
 
 // ---- 關卡生成（固定種子）----
 function addSeg(x0,x1,top){
@@ -702,7 +722,7 @@ function tryFire(now){
   const wp=WEAPONS[player.weapon];
   if(player.weapon==='flame' && now-lastShot>1050){ lastShot=now-wp.interval+100; return; }   // 新按下：計費時點 0.1/1.1/2.1…
   if(now-lastShot<wp.interval) return;
-  if(coins<wp.cost){ flashMsg('金幣不足！這一發要 '+fmt(wp.cost)+'（按右上角＋補幣）','#ff8a7a',1.2); return; }
+  if(coins<wp.cost){ flashMsg('金幣不足！這一發要 '+fmt(wp.cost)+'（試試右上角的金手指）','#ff8a7a',1.2); return; }
   lastShot=now;
   coins-=wp.cost; stats.shots++; stats.totalBet+=wp.cost;
   const ax=aimSX+camX, ay=aimSY;
@@ -881,8 +901,9 @@ function softReset(){
   passedMs.clear();
   spawnEnemies(); runDist=0; inv=2; finished=false;
 }
-function fullReset(){
-  coins=START_COINS;
+function fullReset(keepWallet){
+  if(!keepWallet) coins=START_COINS;                 // 進關＝錢包帶著走；R＝硬重置歸零
+  saveWallet();
   stats={shots:0,hits:0,totalBet:0,totalWin:0,refunds:0,refillTimes:0,kills:0,items:0};
   LEVEL_SEED=(FORCE_SEED!=null)?(FORCE_SEED>>>0):((Math.random()*4294967296)>>>0);   // 每局重抽地圖
   buildLevel(); buildProps();
@@ -2610,7 +2631,7 @@ function readParams(){
   refreshRateTexts();
 }
 function refreshRateTexts(){
-  document.getElementById('grTxt').textContent='Game Rate '+Math.round(GAME_RATE*100)+'%｜全程 2,880m';
+  document.getElementById('grTxt').textContent='全程 2,880m';
   document.getElementById('wpnH3').textContent='武器資料表（每注 '+fmt(BET)+'金幣；中獎機率＝'+Math.round(GAME_RATE*100)+'%÷倍率）';
   document.getElementById('sStatH3').textContent='金流統計（口徑＝扣一次 '+fmt(BET)+'＝一注）';
   document.getElementById('sTheo').textContent=Math.round(GAME_RATE*100)+'%';
@@ -2636,7 +2657,7 @@ function openDeathDlg(mode){
   const pct=Math.round(100*runDist/TOTAL_M);
   document.getElementById('ddInfo').innerHTML=
     '關卡進度 <b style="color:#ffd84d">'+fmt(runDist)+'m（'+pct+'%）</b>｜'+
-    '押注 '+fmt(stats.totalBet)+'｜贏分 '+fmt(stats.totalWin)+'｜Game Rate '+Math.round(GAME_RATE*100)+'%';
+    '押注 '+fmt(stats.totalBet)+'｜贏分 '+fmt(stats.totalWin);
   const fb=document.getElementById('ddFame');
   const ok50=runDist>=TOTAL_M*0.5;
   fb.disabled=!ok50||registered;
@@ -2663,8 +2684,8 @@ document.getElementById('ddOk').onclick=()=>{
   const wN=nameWidth(nm);
   if(!nm){ document.getElementById('ddErr').textContent='名字不能是空的'; return; }
   if(wN>16){ document.getElementById('ddErr').textContent='太長了：目前 '+wN+' 半形字（上限 16）'; return; }
-  board.push({n:nm,d:runDist,b:stats.totalBet,w:stats.totalWin,g:Math.round(GAME_RATE*100),t:Date.now()});
-  board.sort((a,b)=> b.d-a.d || a.t-b.t); board=board.slice(0,50);
+  board.push({n:nm,lv:LEVEL_NUM,d:runDist,b:stats.totalBet,w:stats.totalWin,t:Date.now()});
+  board.sort((a,b)=> (b.lv||0)-(a.lv||0) || b.d-a.d || a.t-b.t); board=board.slice(0,50);
   saveBoard(); registered=true;
   pendingResume=(dlgMode==='death');
   deathDlg.style.display='none';
@@ -2677,11 +2698,12 @@ document.getElementById('ddName').addEventListener('keydown',ev=>{
 let boardMode='view';
 function openBoard(mode){
   boardMode=mode||'view'; dlgHold=true;
-  board.sort((a,b)=> b.d-a.d || a.t-b.t);
+  board.sort((a,b)=> (b.lv||0)-(a.lv||0) || b.d-a.d || a.t-b.t);
   document.getElementById('boardRows').innerHTML= board.length?
     board.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+String(r.n).replace(/[<>&]/g,'')+'</td>'+
+      '<td>'+(r.lv?('1-'+r.lv):'—')+'</td>'+
       '<td>'+fmt(r.d)+'m（'+Math.round(100*r.d/TOTAL_M)+'%）</td><td>'+fmt(r.b)+'</td><td>'+fmt(r.w)+'</td>'+
-      '<td>'+r.g+'%</td><td>'+fmtT(r.t)+'</td></tr>').join('')
+      '<td>'+fmtT(r.t)+'</td></tr>').join('')
     :'<tr><td colspan="7">還沒有人留名，等你寫下第一筆</td></tr>';
   boardPanel.style.display='flex';
 }
@@ -2729,19 +2751,53 @@ function buildWpnPanel(){
   ];
   const rowsHtml=rows.map(r=>'<tr><td>'+r.join('</td><td>')+'</td></tr>').join('');
   document.getElementById('wpnRows').innerHTML=rowsHtml;
-  const w2=document.getElementById('wpnRows2'); if(w2) w2.innerHTML=rowsHtml;   // 遊戲說明內同步一份
+  const w2=document.getElementById('wpnRows2');
+  if(w2) w2.innerHTML=rows.map(r=>'<tr><td>'+r.slice(0,4).join('</td><td>')+'</td></tr>').join('');   // 說明內版本：不含「運作」欄
 }
 function toggleWpn(){ const on=wpnPanel.style.display!=='block'; wpnPanel.style.display=on?'block':'none'; if(on) paramPanel.style.display='none'; }
 const bSnd=document.getElementById('bSnd');
 function toggleSnd(){ muted=!muted; bSnd.textContent='音效：'+(muted?'關':'開'); }
 bSnd.onclick=toggleSnd;
-document.getElementById('bRefill').onclick=()=>{
-  coins+=REFILL_AMT; stats.refillTimes++;
-  floater('＋'+fmt(REFILL_AMT)+' 金幣（補幣）',player.x+40,player.y-110,'#7ed67e',18);
-};
+// ---- 金手指 ----
+const cheatDlg=document.getElementById('cheatDlg');
+let cheatOpen=false;
+const sndCheat=()=>{ beep(660,0.08,'square',0.05); beep(880,0.08,'square',0.05,0.08); beep(1320,0.14,'square',0.05,0.16); };
+function openCheat(){ if(dlgHold&&!cheatOpen) return; cheatOpen=true; dlgHold=true;
+  document.getElementById('cheatMsg').textContent='';
+  document.getElementById('cheatIn').value='';
+  cheatDlg.style.display='flex'; document.getElementById('cheatIn').focus(); }
+function closeCheat(){ cheatOpen=false; cheatDlg.style.display='none'; dlgHold=false; }
+function doCheat(){
+  const c=document.getElementById('cheatIn').value.trim().toLowerCase();
+  const m=document.getElementById('cheatMsg');
+  if(c==='greedisgood'){ coins+=50000; saveWallet(); m.textContent='💰 財源滾滾！金幣 ＋50,000'; sndCheat(); }
+  else if(c==='whosyourdaddy'){ maxHearts+=5; hearts=maxHearts; updHearts(); m.textContent='💪 天下無敵！❤ 上限 +5 並補滿'; sndCheat(); }
+  else if(c==='thereisnospoon'){
+    if(!running){ m.textContent='（要在關卡中使用才有效）'; }
+    else{
+      let nH=0;
+      for(const off of [-150,-90,90,150,210]){
+        const s=segAt(player.x+off); if(!s) continue;
+        hostages.push({x:Math.max(s.x0+40,Math.min(s.x1-40,player.x+off)), y:s.top, state:'crouch', t:0, dir:-1}); nH++;
+      }
+      m.textContent='🙏 貴人相助！'+nH+' 位人質現身'; sndCheat();
+    }
+  }
+  else m.textContent='什麼事都沒發生…';
+  if(m.textContent==='什麼事都沒發生…') beep(140,0.25,'sawtooth',0.05);
+  document.getElementById('cheatIn').value=''; updHUD(); updLvCoins();
+}
+document.getElementById('bCheat').onclick=()=>{ if(!dlgHold) openCheat(); };
+document.getElementById('cheatOk').onclick=doCheat;
+document.getElementById('cheatClose').onclick=closeCheat;
+cheatDlg.addEventListener('pointerdown',e=>{ if(e.target===cheatDlg) closeCheat(); });
+document.getElementById('cheatIn').addEventListener('keydown',ev=>{
+  if(ev.key==='Enter') doCheat();
+  ev.stopPropagation();
+});
 // ---- 選關畫面 ----
 const levelPanel=document.getElementById('levelPanel');
-const LV_POS=[[9,80],[21,62],[14,42],[27,26],[42,34],[54,54],[67,68],[80,50],[73,27],[89,15]];   // 蜿蜒路徑節點 [x%,y%]
+const LV_POS=[[9,86],[21,70],[14,52],[27,37],[42,45],[54,63],[67,76],[80,58],[73,37],[89,25]];   // 蜿蜒路徑節點 [x%,y%]（上方留給頂欄）
 function unlockedMax(){ let m=1; for(let i=0;i<10;i++) if(levelsCleared[i]) m=Math.max(m,i+2); return Math.min(m,10); }
 function buildLevelPanel(){
   const un=unlockedMax();
@@ -2761,16 +2817,26 @@ function buildLevelPanel(){
 function openLevelSelect(){
   document.getElementById('intro').style.display='none';
   running=false; dlgHold=false; deathDlg.style.display='none'; boardPanel.style.display='none';
-  buildLevelPanel(); levelPanel.style.display='block';
+  buildLevelPanel(); updLvCoins(); saveWallet(); levelPanel.style.display='block';
 }
 function startLevel(n){
   LEVEL_NUM=n; levelPanel.style.display='none';
   deathDlg.style.display='none'; dlgHold=false; dlgDeath=false;
-  fullReset();
+  fullReset(true);
   running=true; lastT=performance.now();
 }
+function updLvCoins(){ const el=document.getElementById('lvCoins'); if(el) el.textContent='金幣 '+fmt(coins); }
 document.getElementById('lvBack').onclick=()=>{ levelPanel.style.display='none'; document.getElementById('intro').style.display='flex'; };
-document.getElementById('bLevels').onclick=()=>{ if(dlgHold) return; running=false; openLevelSelect(); };
+document.getElementById('lvHelp').onclick=()=>{ if(!dlgHold) openHelp(); };
+document.getElementById('lvBoard').onclick=()=>{ if(!dlgHold) openBoard('view'); };
+document.getElementById('lvCheat').onclick=()=>{ if(!dlgHold) openCheat(); };
+let lvConfirmT=-1e9;
+document.getElementById('bLevels').onclick=()=>{   // 二段確認：避免誤按直接離開本關
+  if(dlgHold) return;
+  if(!running){ openLevelSelect(); return; }
+  if(performance.now()-lvConfirmT<2000){ lvConfirmT=-1e9; running=false; openLevelSelect(); }
+  else{ lvConfirmT=performance.now(); flashMsg('再按一次「選關」確認離開本關','#ffd84d',1.6); }
+};
 document.getElementById('startBtn').onclick=()=>{ initAudio(); openLevelSelect(); };
 
 // ---- 啟動 ----
