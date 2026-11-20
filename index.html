@@ -2684,7 +2684,8 @@ document.getElementById('ddOk').onclick=()=>{
   board.push({n:nm,lv:LEVEL_NUM,d:runDist,b:stats.totalBet,w:stats.totalWin,t:Date.now()});
   board.sort((a,b)=> (b.lv||0)-(a.lv||0) || b.d-a.d || a.t-b.t); board=board.slice(0,50);
   saveBoard(); registered=true;
-  try{ fetch(BOARD_API,{method:'POST',body:JSON.stringify({n:nm,lv:LEVEL_NUM,d:runDist,b:stats.totalBet,w:stats.totalWin})}); }catch(e){}   // 上傳全服榜（失敗不擋）
+  lastReg={n:nm,lv:LEVEL_NUM,d:runDist,b:stats.totalBet,w:stats.totalWin,t:Date.now()};
+  try{ boardUpP=fetch(BOARD_API,{method:'POST',body:JSON.stringify(lastReg)}).catch(()=>{}); }catch(e){ boardUpP=null; }   // 上傳全服榜（失敗不擋）
   pendingResume=(dlgMode==='death');
   deathDlg.style.display='none';
   openBoard('after');
@@ -2693,7 +2694,7 @@ document.getElementById('ddName').addEventListener('keydown',ev=>{
   if(ev.key==='Enter') document.getElementById('ddOk').onclick();
   ev.stopPropagation();
 });
-let boardMode='view';
+let boardMode='view', boardUpP=null, lastReg=null;
 function renderBoard(list,src){
   document.getElementById('bdSrc').textContent= src==='net'?'🌐 全服榜':'（本機，全服連線中…）';
   document.getElementById('boardRows').innerHTML= list.length?
@@ -2708,8 +2709,11 @@ function openBoard(mode){
   board.sort((a,b)=> (b.lv||0)-(a.lv||0) || b.d-a.d || a.t-b.t);
   renderBoard(board,'local');
   boardPanel.style.display='flex';
-  fetch(BOARD_API).then(r=>r.json()).then(list=>{          // 連上＝換全服榜；失敗＝停留本機榜
+  const waitUp=boardUpP?Promise.race([boardUpP,new Promise(r=>setTimeout(r,4000))]):Promise.resolve();
+  boardUpP=null;
+  waitUp.then(()=>fetch(BOARD_API)).then(r=>r.json()).then(list=>{   // 先等剛剛的留名寫完、再撈全服
     if(Array.isArray(list)&&boardPanel.style.display==='flex'){
+      if(lastReg && !list.some(r=>r.n===lastReg.n&&r.d===lastReg.d)) list.push(lastReg);   // 保險：伺服器還沒回同步就先補上自己
       list.sort((a,b)=> (b.lv||0)-(a.lv||0) || b.d-a.d || a.t-b.t);
       renderBoard(list,'net');
     }
