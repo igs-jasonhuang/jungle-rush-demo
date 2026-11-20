@@ -65,7 +65,7 @@
   /* 對話框與排行榜 */
   .modal{ position:absolute; inset:0; background:rgba(8,10,5,.8); display:none;
     align-items:center; justify-content:center; z-index:8; }
-  .modal .box{ background:#1b2013; border:1px solid #556048; border-radius:10px;
+  .modal .box{ position:relative; background:#1b2013; border:1px solid #556048; border-radius:10px;
     padding:20px 28px; min-width:430px; max-width:90%; }
   .modal h3{ color:var(--gold); font-size:21px; margin:0 0 12px; }
   .modal .row{ display:flex; gap:12px; margin-top:14px; }
@@ -117,8 +117,10 @@
   .lvNode.cur{ outline:3px solid var(--gold); animation:lvPulse 1.2s infinite; }
   .lvNode.lock{ filter:grayscale(.9) brightness(.55); cursor:not-allowed; }
   @keyframes lvPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,216,77,.55);} 50%{ box-shadow:0 0 0 14px rgba(255,216,77,0);} }
-  #helpX{ float:right; cursor:pointer; color:#cfe0b8; font-size:22px; line-height:1; padding:0 2px; }
-  #helpX:hover{ color:#fff; }
+  #helpX{ position:absolute; top:12px; right:14px; width:36px; height:36px; border-radius:50%;
+    border:1px solid #6a7458; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:#cfe0b8; font-size:19px; line-height:1; }
+  #helpX:hover{ color:#fff; border-color:#e8e6d8; background:rgba(255,255,255,.07); }
   #helpBody p{ margin:0 0 14px; line-height:1.8; font-size:15.5px; color:#e8e6d8; }
   #helpBody p .k{ color:var(--gold); }
   #helpBody p b{ color:#ffe89a; }
