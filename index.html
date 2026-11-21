@@ -102,6 +102,9 @@
   #lvPath{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }   /* 裝飾層：不吃點擊 */
   #lvBack{ position:absolute; left:14px; top:12px; }
   #lvTop{ position:absolute; right:16px; top:12px; display:flex; gap:8px; align-items:center; }
+  #lvStats{ position:absolute; left:16px; top:56px; text-align:left; font-size:16px; line-height:2;
+    color:#e8e6d8; text-shadow:0 1px 4px #000; }
+  #lvStats b{ color:var(--gold); }
   #lvTop .btn{ pointer-events:auto; }
   #lvCoins{ color:var(--gold); font-weight:bold; font-size:19px; margin-right:8px; text-shadow:0 1px 3px #000; }
   #cheatIn{ width:300px; font-size:17px; background:#2c3222; color:#ffe89a; border:1px solid #556048;
@@ -114,9 +117,9 @@
     border:3px solid #2b2317; box-shadow:0 4px 10px rgba(0,0,0,.5); }
   .lvNode .st{ font-size:15px; line-height:1.1; }
   .lvNode.clear{ background:radial-gradient(circle at 35% 30%, #c8a23e, #6b5718 70%); border-color:#a98c2e; }
-  .lvNode.cur{ outline:3px solid var(--gold); animation:lvPulse 1.2s infinite; }
+  .lvNode.cur{ outline:4px solid var(--gold); filter:drop-shadow(0 0 16px rgba(255,216,77,.9)); animation:lvPulse 1.2s infinite; }
   .lvNode.lock{ filter:grayscale(.9) brightness(.55); cursor:not-allowed; }
-  @keyframes lvPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,216,77,.55);} 50%{ box-shadow:0 0 0 14px rgba(255,216,77,0);} }
+  @keyframes lvPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,216,77,.7);} 50%{ box-shadow:0 0 0 26px rgba(255,216,77,0);} }
   #helpX{ position:absolute; top:12px; right:14px; width:36px; height:36px; border-radius:50%;
     border:1px solid #6a7458; display:flex; align-items:center; justify-content:center;
     cursor:pointer; color:#cfe0b8; font-size:19px; line-height:1; }
@@ -254,6 +257,12 @@
     <div class="row" style="justify-content:center"><button class="btn" id="bdClose">關閉</button></div>
   </div></div>
 
+  <div id="lvupDlg" class="modal"><div class="box" style="min-width:440px;text-align:center">
+    <h3>⬆ LEVEL UP！</h3>
+    <div id="luBody" style="font-size:17px;line-height:2.1;color:#e8e6d8"></div>
+    <div class="row" style="justify-content:center"><button class="btn gold" id="luOk">太棒了</button></div>
+  </div></div>
+
   <div id="cheatDlg" class="modal"><div class="box" style="min-width:430px">
     <h3>金手指</h3>
     <input id="cheatIn" placeholder="輸入指令…" autocomplete="off">
@@ -263,6 +272,7 @@
 
   <div id="levelPanel">
     <h2>選擇關卡</h2>
+    <div id="lvStats"></div>
     <div id="lvTop">
       <span id="lvCoins"></span>
       <button class="btn" id="lvHelp">遊戲說明</button>
@@ -290,11 +300,11 @@
     <h3>遊戲說明<span id="helpX" title="關閉">✕</span></h3>
     <div id="helpBody">
       <p>．<b class="k">目標</b>：一路往右推進 2,880m 到終點。<b>每發子彈 −100 金幣＝一次抽獎</b>，打倒敵人贏金幣、倍率越高越大獎。</p>
-      <p>．<b class="k">操作</b>：<span class="pcHint"><b>A D</b> 移動｜<b>W／空白鍵</b> 跳躍（<b>可二段跳</b>）｜<b>滑鼠瞄準＋左鍵射擊</b>｜<b>右鍵</b>＝小刀</span><span class="tcHint" style="display:none"><b>左下搖桿</b>移動（往下拉＝蹲下）｜右側按鈕<b>跳躍（可二段跳）／射擊／小刀</b>｜<b>手指點畫面</b>＝瞄準</span></p>
+      <p>．<b class="k">操作</b>：<span class="pcHint"><b>A D</b> 移動｜<b>W／空白鍵</b> 跳躍｜<b>滑鼠瞄準＋左鍵射擊</b>｜<b>右鍵</b>＝小刀</span><span class="tcHint" style="display:none"><b>左下搖桿</b>移動（往下拉＝蹲下）｜右側按鈕<b>跳躍／射擊／小刀</b>｜<b>手指點畫面</b>＝瞄準</span></p>
       <p>．<b class="k">金幣</b>：初始金幣 <b>20,000</b>、每注 <b>100</b>；打中敵人＝一次抽獎：中獎機率＝<b>90%÷倍率</b>、中獎金額＝<b>100×倍率</b>。</p>
       <p>．<b class="k">闖關</b>：全長 30 個畫面（2,880m），<b>地形每局隨機</b>（多種組塊拼成、同一局不重複）；敵人靠近半個畫面才啟動。終點是 <b>BOSS 房</b>：進房封路、擊破 BOSS 才過關。</p>
       <p>．<b class="k">愛心</b>：❤×3，中彈／碰敵／掉坑 −1❤；歸零可選「從紀錄點（路牌）繼續」，或<b>「留名青史」</b>把本局成績留上排行榜（留名後本局結束回大廳）；重生時畫面內不留敵人。</p>
-      <p>．<b class="k">人質</b>：路上喊 <b>HELP!</b> 的金髮大鬍大叔，碰到會放下寶箱，隨機開出 <b>❤上限+1並補滿／S 散彈槍／F 火焰槍／G 榴彈／R 火箭炮</b>（彈藥用完自動換回步槍）。</p>
+      <p>．<b class="k">人質</b>：路上喊 <b>HELP!</b> 的金髮大鬍大叔，碰到會放下寶箱，隨機開出 <b>❤生命補滿／S 散彈槍／F 火焰槍／G 榴彈／R 火箭炮</b>（彈藥用完自動換回步槍）。</p>
       <p>．<b class="k">隱藏寶箱</b>：偶爾有<b>半埋土裡的寶箱</b>——用<b>小刀</b>砍開有好料。</p>
       <p>．<b class="k">小刀</b>：滑鼠右鍵朝準心方向<b>半月劈砍</b>（攻擊力×10、冷卻 0.5 秒）；<b>砍中才扣 100</b>，揮空不扣幣。小心：步兵也會跳過來砍你。</p>
       <p>．<b class="k">武器</b>：細節見下方武器表——散彈槍 5 顆各自一注；<b>火焰槍觸敵 0.1 秒即燒</b>、每秒 −300＝3 個額度追打活口；榴彈／火箭炮爆炸由近到遠派注、沒用完退還。</p>
@@ -319,7 +329,7 @@
   </div></div>
 
 </div>
-<div id="hint">A D 移動（連點兩下＝跑步）　W／空白 跳躍(二段)　S 蹲下　滑鼠瞄準・左鍵射擊・右鍵小刀　Tab統計　L排行榜　P暫停　M音效</div>
+<div id="hint">A D 移動（連點兩下＝跑步）　W／空白 跳躍　S 蹲下　滑鼠瞄準・左鍵射擊・右鍵小刀　Tab統計　L排行榜　P暫停　M音效</div>
 </div>
 
 <script>
@@ -421,6 +431,32 @@ try{ levelsCleared=JSON.parse(localStorage.getItem('fishDemo_levels')||'[]'); }c
 function saveLevels(){ try{ localStorage.setItem('fishDemo_levels',JSON.stringify(levelsCleared)); }catch(e){} }
 try{ const cw=localStorage.getItem('fishDemo_coins'); if(cw!==null) coins=Math.max(0,parseInt(cw)||0); }catch(e){}
 function saveWallet(){ try{ localStorage.setItem('fishDemo_coins',String(coins)); }catch(e){} }
+// ---- 等級系統（經驗/升級/獎勵；跨關卡存檔）----
+let cheatGod=false, cheatSpeed=false;                  // 密技 jasonhuang：無敵＋移速（限本關）
+let plvl=1, pxp=0, luFxT=0, pendingRw=[];
+try{ plvl=Math.max(1,parseInt(localStorage.getItem('fishDemo_lvl'))||1);
+     pxp=Math.max(0,parseInt(localStorage.getItem('fishDemo_xp'))||0); }catch(e){}
+function saveLvl(){ try{ localStorage.setItem('fishDemo_lvl',String(plvl)); localStorage.setItem('fishDemo_xp',String(pxp)); }catch(e){} }
+function heartCap(){ let c=3; for(const L of [2,4,6,8]) if(plvl>=L) c++; if(plvl>=10) c+=3; return c; }
+function ATK(){ return plvl>=9?5:0; }                  // Lv9：所有武器攻擊力 +5
+function spdMul(){ return (plvl>=7?1.3:1)*(cheatSpeed?2:1); }
+const XP_TBL={soldier:1,para:1,runner:1,mg:1,shield:1,turret:1,tank:2,heli:3,boss:10};
+const RW_TXT={2:'❤ 上限 +1 並補滿',3:'🦘 二段跳躍解鎖！落地前可再跳一次',4:'❤ 上限 +1 並補滿',
+  5:'⚡ 閃電刃！小刀進化：威力與範圍加倍',6:'❤ 上限 +1 並補滿',7:'🏃 移動速度 +30%',
+  8:'❤ 上限 +1 並補滿',9:'🗡 攻擊力 +5（所有武器）',10:'❤ 上限 +3 並補滿'};
+function gainXp(n){
+  if(plvl>=10){ return; }
+  pxp+=n;
+  while(pxp>=50&&plvl<10){
+    pxp-=50; plvl++;
+    pendingRw.push('等級 <b>'+plvl+'</b>　'+(RW_TXT[plvl]||''));
+    maxHearts=Math.max(maxHearts,heartCap()); hearts=maxHearts; updHearts();   // 升級補滿愛心
+    luFxT=1.1; floater('LEVEL UP！',player.x,player.y-88,'#8fd0ff',24);
+    sndCheat();
+  }
+  if(plvl>=10) pxp=Math.min(pxp,50);
+  saveLvl();
+}
 const BOARD_API='https://script.google.com/macros/s/AKfycbwBqap62ShxLLaq5Q1TW5d-nGkU1DjB0Ur2XYiOQ3AsSlxNcKLsOi_CdHY6Ht0c_aib0Q/exec';   // 全服榜收件端（Google 試算表）
 let lastShot=0, time=0, camX=0;
 let runDist=0, bestDist=0, bestDirty=false, lastSave=0;
@@ -460,6 +496,10 @@ const sndBoom  =()=>beep(110,0.28,'sawtooth',0.05);
 const sndHurt  =()=>{ beep(180,0.18,'sawtooth',0.06); beep(130,0.22,'sawtooth',0.05,0.08); };
 const sndPick  =()=>{ beep(880,0.07,'square',0.04); beep(1175,0.1,'square',0.04,0.07); };
 const sndUI    =()=>beep(640,0.04,'triangle',0.06);            // 按鈕點擊
+const sndJump  =()=>{ beep(300,0.05,'square',0.03); beep(430,0.07,'square',0.03,0.04); };
+const sndJump2 =()=>{ beep(430,0.05,'square',0.03); beep(640,0.08,'square',0.035,0.04); };   // 二段跳
+const sndSwing =()=>beep(230,0.1,'sawtooth',0.035);                 // 小刀揮砍
+const sndSwingE=()=>{ beep(520,0.06,'sawtooth',0.04); beep(1240,0.09,'square',0.03,0.03); }; // 閃電刃
 const sndDeny  =()=>beep(170,0.09,'sawtooth',0.045);           // 不可用（鎖住的關卡）
 function sndWin(mult){
   const base= mult>=15?523:659;
@@ -664,6 +704,8 @@ function knifeAttack(now){
   if(!running||paused||freeze>0||dlgHold) return;
   if(now-lastKnife<KNIFE.cd) return;
   lastKnife=now; knifeVisT=KNIFE.anim;                 // 出刀動畫期間槍收起
+  (plvl>=5?sndSwingE:sndSwing)();
+  const kr=KNIFE.reach*(plvl>=5?2:1);                  // Lv5 閃電刃：範圍加倍
   knifeDown=Math.random()<0.5;                         // 隨機：由上往下或由下往上劈
   const dir=(aimSX+camX>=player.x)?1:-1;
   player.face=dir;
@@ -673,7 +715,7 @@ function knifeAttack(now){
     if(b.opened) continue;
     const nx2=Math.max(b.x-14,Math.min(cxk,b.x+14));
     const ny2=Math.max(b.top-14,Math.min(cyk,b.top));
-    if((nx2-cxk)*(nx2-cxk)+(ny2-cyk)*(ny2-cyk) < KNIFE.reach*KNIFE.reach && (b.x-player.x)*dir>-16){
+    if((nx2-cxk)*(nx2-cxk)+(ny2-cyk)*(ny2-cyk) < kr*kr && (b.x-player.x)*dir>-16){
       b.opened=true; chests.push({x:b.x, y:b.top, t:0});
       spark(b.x,b.top-10,'#ffd84d',14,200); sndPick();
     }
@@ -685,15 +727,15 @@ function knifeAttack(now){
     if((e.x-player.x)*dir < -e.w/2) continue;          // 背後不算
     const nx=Math.max(e.x-e.w/2,Math.min(cxk,e.x+e.w/2));
     const ny=Math.max(top,Math.min(cyk,top+e.h));
-    if((nx-cxk)*(nx-cxk)+(ny-cyk)*(ny-cyk) < KNIFE.reach*KNIFE.reach){
+    if((nx-cxk)*(nx-cxk)+(ny-cyk)*(ny-cyk) < kr*kr){
       const ad=Math.abs(e.x-player.x);
       if(ad<bd){ bd=ad; best=e; }
     }
   }
-  if(!best){ beep(300,0.06,'triangle',0.02); return; } // 揮空：免費、不計算
+  if(!best) return;                                    // 揮空：免費、不計算（揮砍音已播）
   if(coins<KNIFE.cost){ flashMsg('金幣不足！刺一刀要 '+KNIFE.cost,'#ff8a7a',1.2); return; }
   coins-=KNIFE.cost; stats.shots++; stats.totalBet+=KNIFE.cost;
-  applyHit(best,KNIFE.dmg,best.x,(best.fly?best.y:best.y-best.h)+best.h/2,true);
+  applyHit(best,KNIFE.dmg*(plvl>=5?2:1)+ATK(),best.x,(best.fly?best.y:best.y-best.h)+best.h/2,true);
   beep(520,0.05,'square',0.035); beep(760,0.05,'square',0.035,0.04);
 }
 function flameRange(){    // 火焰槍噴射錐（依準心方向；越遠越寬）
@@ -802,6 +844,7 @@ function applyHit(en,dmg,hx,hy,prize){
   if(en.hp<=0 && !en.dead){
     en.dead=true; stats.kills++;
     comboN=(comboT>0?comboN+1:1); comboT=2.0; comboPop=0.32;   // 2 秒內連殺＝Combo（純表演、不影響輸贏）
+    gainXp(XP_TBL[en.key]||1);
     if(en.key==='boss') bossClearT=1.7;                // BOSS 擊破：連環爆後結算
     if(HUMAN_KEYS.has(en.key)) killHuman(en);          // 人物：被擊倒往後倒（不爆炸）
     else{
@@ -831,7 +874,7 @@ function explodeBullet(b,x,y){
   let prized=0;
   for(const p of list){
     const give=prized<b.u; if(give) prized++;
-    applyHit(p.en,b.d,p.cx,p.cy,give);
+    applyHit(p.en,b.d+ATK(),p.cx,p.cy,give);
   }
   refund(b.u-prized);
 }
@@ -841,8 +884,7 @@ function pickupItem(it){
   stats.items++; sndPick();
   if(it.kind==='heart'){
     // ❤＝上限 +1（最高 8）＋血量補滿
-    if(maxHearts<8){ maxHearts++; floater('❤ 上限+1！生命全滿',player.x,player.y-60,'#ff8a7a',18); }
-    else floater('❤ 生命全滿',player.x,player.y-60,'#ff8a7a',16);
+    floater('❤ 生命補滿',player.x,player.y-60,'#ff8a7a',17);   // 上限提升改走等級獎勵
     hearts=maxHearts; updHearts();
   }else{
     player.weapon=it.kind; player.ammo=WEAPONS[it.kind].ammo;
@@ -857,7 +899,7 @@ function updHearts(){
   document.getElementById('hearts').innerHTML=s;
 }
 function hurt(){
-  if(inv>0||finished||freeze>0) return;
+  if(inv>0||finished||freeze>0||cheatGod) return;
   hearts--; updHearts(); sndHurt(); inv=2; hurtPoseT=0.28;
   spark(player.x,player.y-22,'#ff7a6a',10,220);
   floater('−1 ❤',player.x,player.y-54,'#ff8a7a',16);
@@ -865,10 +907,12 @@ function hurt(){
 }
 function pitFall(){
   if(freeze>0) return;
-  hearts--; updHearts(); sndHurt();
-  if(hearts<=0){ gameOver(); return; }
-  hurtPoseT=0.28;
-  flashMsg('掉進深坑！−1 ❤','#ff8a7a',1.3);
+  if(!cheatGod){
+    hearts--; updHearts(); sndHurt();
+    if(hearts<=0){ gameOver(); return; }
+    hurtPoseT=0.28;
+    flashMsg('掉進深坑！−1 ❤','#ff8a7a',1.3);
+  }
   player.x=safeX; player.y=safeY; player.vx=0; player.vy=0; player.onGround=true; inv=2;
 }
 function gameOver(){
@@ -895,7 +939,7 @@ function checkpointRespawn(){
   }
 }
 function softReset(){
-  maxHearts=MAX_HEARTS; hearts=maxHearts; lastChestKind=null; registered=false; dlgDeath=false; comboN=0; comboT=0; duskK=0; updHearts();
+  maxHearts=heartCap(); hearts=maxHearts; lastChestKind=null; registered=false; dlgDeath=false; comboN=0; comboT=0; duskK=0; cheatGod=false; cheatSpeed=false; updHearts();
   player.x=140; player.y=BASE_Y; player.vx=0; player.vy=0; player.onGround=true; player.crouch=false;
   player.weapon='rifle'; player.ammo=0;
   sprinting=false; jumpBufT=0; coyoteT=0; walkPh=0; lastKnife=-9999; afterFreeze=null;
@@ -974,7 +1018,7 @@ function updatePlayer(dt){
   if(keys['d']||keys['arrowright']) mv+=1;
   if(mv===0 || player.crouch || (sprinting&&mv!==sprintDir)) sprinting=false;
   // 慣性移動：0.5 秒加到極速、0.25 秒完全煞車
-  const maxSpd=player.crouch?CROUCH_MAX:(sprinting?RUN_MAX:WALK_MAX);
+  const maxSpd=(player.crouch?CROUCH_MAX:(sprinting?RUN_MAX:WALK_MAX))*spdMul();   // Lv7 +30%／jasonhuang ×2
   const target=mv*maxSpd;
   const speedingUp = target!==0 && (player.vx===0 || (Math.sign(target)===Math.sign(player.vx) && Math.abs(target)>=Math.abs(player.vx)));
   let rate;
@@ -997,9 +1041,9 @@ function updatePlayer(dt){
   jumpBufT=Math.max(0,jumpBufT-dt);
   if(player.onGround){ coyoteT=COYOTE; player.airJ=1; } else coyoteT=Math.max(0,coyoteT-dt);
   if(jumpBufT>0 && coyoteT>0 && !player.crouch){
-    player.vy=-JUMP_V; player.onGround=false; coyoteT=0; jumpBufT=0;
-  }else if(jumpBufT>0 && !player.onGround && coyoteT<=0 && player.airJ>0){   // 二段跳：落地前可再跳一次
-    player.vy=-JUMP_V; player.airJ=0; jumpBufT=0;
+    player.vy=-JUMP_V; player.onGround=false; coyoteT=0; jumpBufT=0; sndJump();
+  }else if(jumpBufT>0 && !player.onGround && coyoteT<=0 && player.airJ>0 && plvl>=3){   // 二段跳（Lv3 獎勵解鎖）
+    player.vy=-JUMP_V; player.airJ=0; jumpBufT=0; sndJump2();
     for(let i=0;i<7;i++) parts.push({x:player.x+(Math.random()-0.5)*20,y:player.y+2,
       vx:(Math.random()-0.5)*90,vy:20+Math.random()*40,life:0.3+Math.random()*0.15,color:'#e8e6d8',size:2+Math.random()*2,g:-200});
   }
@@ -1042,6 +1086,12 @@ function updatePlayer(dt){
   hurtPoseT=Math.max(0,hurtPoseT-dt);
   comboT=Math.max(0,comboT-dt); if(comboT<=0) comboN=0;
   comboPop=Math.max(0,comboPop-dt);
+  if(luFxT>0){                                         // 升級特效：腳下往上發射擴散的藍光
+    luFxT-=dt;
+    for(let i=0;i<3;i++) parts.push({x:player.x+(Math.random()-0.5)*36, y:player.y+2,
+      vx:(Math.random()-0.5)*60, vy:-170-Math.random()*170, life:0.4+Math.random()*0.3,
+      color:Math.random()<0.5?'#6db1ff':'#9fd0ff', size:2.5+Math.random()*3, g:-60});
+  }
   const duskTarget = runDist>=1920?1:(runDist>=960?0.55:0);   // 每兩個紀錄點變一階（960m／1920m）
   duskK += (duskTarget-duskK)*Math.min(1,dt*1.2);
   const d=Math.min(TOTAL_M,Math.max(0,Math.round((player.x-140)/10)));
@@ -1263,7 +1313,7 @@ function update(dt,now){
         e.flameDmgAt=now;
         if(!(e.burnT>0)) e.burnAge=0;                  // 剛點燃：先冒火苗，0.3 秒後全身燒
         e.burnT=1.15;
-        let dmgF=WEAPONS.flame.dmg;
+        let dmgF=WEAPONS.flame.dmg+ATK();
         if(HUMAN_KEYS.has(e.key)&&e.hp<=dmgF){ dmgF=Math.max(0,e.hp-0.01); e.burnDying=true; }   // 人形燒死：留一口氣演完
         if(dmgF>0) applyHit(e,dmgF,e.x,(e.fly?e.y:e.y-e.h)+e.h/2,false);
       }
@@ -1276,6 +1326,7 @@ function update(dt,now){
     if(bossClearT<=0 && !finished) levelClear();
   }
   if(clearDlgT>0){ clearDlgT-=dt; if(clearDlgT<=0) openDeathDlg('finish'); }
+  if(pendingRw.length && luFxT<=0 && !dlgHold && freeze<=0) openLvup();
   // 人質：待救呼救（state 名仍叫 crouch）→碰到道謝→放寶箱→離場
   for(const hst of hostages){
     if(hst.state==='crouch'){
@@ -1303,9 +1354,10 @@ function update(dt,now){
     if(ch.t>0.8){
       ch.gone=true;
       const pick=()=>{
-        let tot=0; for(const d of CHEST_ITEMS) tot+=d[1];
-        let r=Math.random()*tot, k=CHEST_ITEMS[0][0];
-        for(const d of CHEST_ITEMS){ r-=d[1]; if(r<=0){ k=d[0]; break; } }
+        const pool2=CHEST_ITEMS.filter(it2=>(it2[0]!=='grenade'||LEVEL_NUM>=2)&&(it2[0]!=='rocket'||LEVEL_NUM>=3));   // 高階武器後面關卡才出（隱藏規則）
+        let tot=0; for(const d of pool2) tot+=d[1];
+        let r=Math.random()*tot, k=pool2[0][0];
+        for(const d of pool2){ r-=d[1]; if(r<=0){ k=d[0]; break; } }
         return k;
       };
       let kind=pick();
@@ -1357,7 +1409,7 @@ function update(dt,now){
       if(b.x>en.x-en.w/2&&b.x<en.x+en.w/2&&b.y>top&&b.y<top+en.h){
         b.gone=true;
         if(b.type==='grenade'||b.type==='rocket') explodeBullet(b,b.x,b.y);
-        else applyHit(en,1,b.x,b.y,true);
+        else applyHit(en,1+ATK(),b.x,b.y,true);
         break;
       }
     }
@@ -2035,16 +2087,16 @@ function drawPlayer(){
     // 半月劈砍（出刀時槍管收起）：隨機由上到下／由下到上掃過，亮刃＋殘影（判定＝同半徑半圓）
     const prog=Math.min(1,(1-knifeVisT/KNIFE.anim)*1.25);
     const ky=player.y-(player.crouch?16:24);
-    const R=KNIFE.reach, a0=-1.25, a1=1.25;
+    const R=KNIFE.reach*(plvl>=5?2:1), a0=-1.25, a1=1.25;   // 閃電刃＝大一倍、藍光
     const sweep=knifeDown ? a0+(a1-a0)*prog : a1-(a1-a0)*prog;
     ctx.save(); ctx.translate(player.x+player.face*8,ky);
     if(player.face<0) ctx.scale(-1,1);
-    ctx.globalAlpha=0.3; ctx.fillStyle='#dfe8ee';
+    ctx.globalAlpha=0.3; ctx.fillStyle=plvl>=5?'#8fc8ff':'#dfe8ee';
     ctx.beginPath();
     if(knifeDown){ ctx.arc(0,0,R,a0,sweep,false); ctx.arc(0,0,R*0.45,sweep,a0,true); }
     else{ ctx.arc(0,0,R,a1,sweep,true); ctx.arc(0,0,R*0.45,sweep,a1,false); }
     ctx.closePath(); ctx.fill();
-    ctx.globalAlpha=0.95; ctx.fillStyle='#ffffff';
+    ctx.globalAlpha=0.95; ctx.fillStyle=plvl>=5?'#d9f0ff':'#ffffff';
     ctx.beginPath();
     ctx.arc(0,0,R,sweep-0.3,sweep+0.12,false);
     ctx.arc(0,0,R*0.45,sweep+0.12,sweep-0.3,true);
@@ -2787,7 +2839,11 @@ function doCheat(){
   const c=document.getElementById('cheatIn').value.trim().toLowerCase();
   const m=document.getElementById('cheatMsg');
   if(c==='greedisgood'){ coins+=50000; saveWallet(); m.textContent='💰 財源滾滾！金幣 ＋50,000'; sndCheat(); }
-  else if(c==='whosyourdaddy'){ maxHearts+=5; hearts=maxHearts; updHearts(); m.textContent='💪 天下無敵！❤ 上限 +5 並補滿'; sndCheat(); }
+  else if(c==='whosyourdaddy'){ maxHearts=10; hearts=10; updHearts(); m.textContent='💪 天下無敵！❤ 上限 =10 並補滿'; sndCheat(); }
+  else if(c==='jasonhuang'){
+    if(!running){ m.textContent='（要在關卡中使用才有效）'; }
+    else{ cheatGod=true; cheatSpeed=true; m.textContent='🥷 作者測試！無敵、移動速度+100%'; sndCheat(); }
+  }
   else if(c==='thereisnospoon'){
     if(!running){ m.textContent='（要在關卡中使用才有效）'; }
     else{
@@ -2799,7 +2855,7 @@ function doCheat(){
       m.textContent='🙏 貴人相助！'+nH+' 位人質現身'; sndCheat();
     }
   }
-  else if(c==='iseedeadpeople'||c==='iseedeadpoeple'){   // 開圖（支援原版與常見手滑拼法）
+  else if(c==='iseedeadpeople'){                         // 開圖（只收正確拼法）
     for(let i=0;i<9;i++) levelsCleared[i]=true;
     saveLevels();
     if(levelPanel.style.display==='block'){ buildLevelPanel(); updLvCoins(); }
@@ -2809,6 +2865,12 @@ function doCheat(){
   if(m.textContent==='什麼事都沒發生…') beep(140,0.25,'sawtooth',0.05);
   document.getElementById('cheatIn').value=''; updHUD(); updLvCoins();
 }
+function openLvup(){
+  document.getElementById('luBody').innerHTML=pendingRw.join('<br>');
+  pendingRw=[]; dlgHold=true;
+  document.getElementById('lvupDlg').style.display='flex';
+}
+document.getElementById('luOk').onclick=()=>{ document.getElementById('lvupDlg').style.display='none'; dlgHold=false; };
 document.getElementById('bCheat').onclick=()=>{ if(!dlgHold) openCheat(); };
 document.getElementById('cheatOk').onclick=doCheat;
 document.getElementById('cheatClose').onclick=closeCheat;
@@ -2835,11 +2897,19 @@ function buildLevelPanel(){
     if(n<=un) el.onclick=()=>startLevel(n);
     levelPanel.appendChild(el);
   });
+  const st=document.getElementById('lvStats');
+  if(st){
+    st.innerHTML='等級 <b>'+plvl+'</b>　經驗 <b>'+(plvl>=10?'MAX':(pxp+'/50'))+'</b><br>'+
+      '❤ 上限 <b>'+heartCap()+'</b>（過關會補滿）<br>'+
+      '技能：🦘二段跳 '+(plvl>=3?'✅':'🔒Lv3')+'｜⚡閃電刃 '+(plvl>=5?'✅':'🔒Lv5')+
+      '｜🏃疾走 '+(plvl>=7?'✅':'🔒Lv7')+'｜🗡攻擊+5 '+(plvl>=9?'✅':'🔒Lv9');
+  }
 }
 function openLevelSelect(){
   document.getElementById('intro').style.display='none';
   running=false; dlgHold=false; deathDlg.style.display='none'; boardPanel.style.display='none';
   buildLevelPanel(); updLvCoins(); saveWallet(); levelPanel.style.display='block';
+  if(pendingRw.length){ luFxT=0; openLvup(); }
 }
 function startLevel(n){
   LEVEL_NUM=n; levelPanel.style.display='none';
