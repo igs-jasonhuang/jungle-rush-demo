@@ -21,6 +21,10 @@
   #hudL .sub{ font-size:14px; color:#ffeeb0; }
   #hearts{ font-size:24px; letter-spacing:3px; line-height:1.2; margin-top:2px; }
   #wpnTxt{ font-size:16px; color:#cfe6ff; margin-top:1px; }
+  #xpRow{ display:flex; align-items:center; gap:6px; margin-top:3px; }
+  #xpLv{ font-size:14px; color:#8fd0ff; font-weight:bold; }
+  #xpBar{ width:118px; height:6px; background:#2a2d22; border:1px solid #556048; border-radius:3px; overflow:hidden; }
+  #xpFill{ height:100%; width:0%; background:#6db1ff; }
   #hudR{ right:16px; top:12px; text-align:right; }
   #hudR .dist{ font-size:18px; font-weight:bold; color:#cfe6ff; }
   #hudR .gr{ font-size:14px; color:#d8f0c0; }
@@ -166,6 +170,7 @@
     <div class="coins" id="coinTxt">20,000</div>
     <div class="sub" id="costTxt">每發子彈 −100 金幣</div>
     <div id="hearts"></div>
+    <div id="xpRow"><span id="xpLv">Lv 1</span><div id="xpBar"><div id="xpFill"></div></div></div>
     <div id="wpnTxt">武器：步槍 ∞</div>
   </div>
 
@@ -304,6 +309,7 @@
       <p>．<b class="k">金幣</b>：初始金幣 <b>20,000</b>、每注 <b>100</b>；打中敵人＝一次抽獎：中獎機率＝<b>90%÷倍率</b>、中獎金額＝<b>100×倍率</b>。</p>
       <p>．<b class="k">闖關</b>：全長 30 個畫面（2,880m），<b>地形每局隨機</b>（多種組塊拼成、同一局不重複）；敵人靠近半個畫面才啟動。終點是 <b>BOSS 房</b>：進房封路、擊破 BOSS 才過關。</p>
       <p>．<b class="k">愛心</b>：❤×3，中彈／碰敵／掉坑 −1❤；歸零可選「從紀錄點（路牌）繼續」，或<b>「留名青史」</b>把本局成績留上排行榜（留名後本局結束回大廳）；重生時畫面內不留敵人。</p>
+      <p>．<b class="k">等級</b>：擊殺敵人累積經驗，升級會有獎勵。</p>
       <p>．<b class="k">人質</b>：路上喊 <b>HELP!</b> 的金髮大鬍大叔，碰到會放下寶箱，隨機開出 <b>❤生命補滿／S 散彈槍／F 火焰槍／G 榴彈／R 火箭炮</b>（彈藥用完自動換回步槍）。</p>
       <p>．<b class="k">隱藏寶箱</b>：偶爾有<b>半埋土裡的寶箱</b>——用<b>小刀</b>砍開有好料。</p>
       <p>．<b class="k">小刀</b>：滑鼠右鍵朝準心方向<b>半月劈砍</b>（攻擊力×10、冷卻 0.5 秒）；<b>砍中才扣 100</b>，揮空不扣幣。小心：步兵也會跳過來砍你。</p>
@@ -2572,6 +2578,8 @@ function updHUD(){
   coinTxt.textContent=fmt(coins);
   coinTxt.style.color = coins<BET ? '#ff7a6a' : '#ffd84d';
   document.getElementById('distTxt').textContent='1-'+LEVEL_NUM+'｜推進 '+fmt(runDist)+'m｜最遠 '+fmt(bestDist)+'m';
+  document.getElementById('xpLv').textContent='Lv '+plvl+(plvl>=10?' MAX':'');
+  document.getElementById('xpFill').style.width=(plvl>=10?100:Math.min(100,pxp*2))+'%';
   document.getElementById('pbFill').style.width=Math.min(100,runDist/TOTAL_M*100)+'%';
   document.getElementById('pbBest').style.left=Math.min(100,bestDist/TOTAL_M*100)+'%';
   document.getElementById('wpnTxt').textContent = player.weapon==='rifle'
