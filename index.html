@@ -450,7 +450,8 @@ const XP_TBL={soldier:1,para:1,runner:1,mg:1,shield:1,turret:1,tank:2,heli:3,bos
 const RW_TXT={2:'❤ 上限 +1 並補滿',3:'🦘 二段跳躍解鎖！落地前可再跳一次',4:'❤ 上限 +1 並補滿',
   5:'⚡ 閃電刃！小刀進化：威力與範圍加倍',6:'❤ 上限 +1 並補滿',7:'🏃 移動速度 +30%',
   8:'❤ 上限 +1 並補滿',9:'🗡 戰神！攻擊力 +5（所有武器）',10:'❤ 上限 +3 並補滿'};
-const xpNeed=l=>24+4*l;                                // 升級需求：28/32/36/40/44/48/52/56/60
+const XP_NEED=[120,200,290,370,460,540,630,710,800];   // 升級需求（11-21 定案）：不練功 1-1 結束 Lv2、1-10 結束 Lv8，Lv9/10 需重打
+const xpNeed=l=>XP_NEED[Math.min(9,Math.max(1,l))-1];
 function gainXp(n){
   if(plvl>=10){ return; }
   pxp+=n;
