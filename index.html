@@ -360,7 +360,7 @@
   </div></div>
 
 </div>
-<div id="hint">A D 移動（連點兩下＝跑步）　W／空白 跳躍　S 蹲下　滑鼠瞄準・左鍵射擊・右鍵小刀　Tab統計　L排行榜　P暫停　M音效</div>
+<div id="hint">A D 移動（連點兩下＝跑步）　W／空白 跳躍　S 蹲下　滑鼠瞄準・左鍵射擊・右鍵小刀　Tab統計　L排行榜　M音效</div>
 </div>
 
 <script>
@@ -2677,7 +2677,7 @@ window.addEventListener('keydown',ev=>{
   if(k==='tab'){ ev.preventDefault(); toggleStats(); }
   if(k==='o') toggleParam();
   if(k==='l'&&!dlgHold) openBoard('view');
-  if(k==='p') paused=!paused;
+  // （P 鍵暫停已移除；遊戲說明／金手指等視窗本身會暫停）
   // （v24：R 鍵重置已移除，防玩家誤按；重開一局＝回選關重選）
   if(k==='m') toggleSnd();
   if(k==='arrowup'||k==='arrowdown') ev.preventDefault();
