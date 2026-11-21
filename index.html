@@ -114,6 +114,11 @@
   #cheatIn{ width:300px; font-size:17px; background:#2c3222; color:#ffe89a; border:1px solid #556048;
     border-radius:4px; padding:7px 10px; }
   #cheatMsg{ margin-top:10px; min-height:22px; color:#ffe89a; font-size:15.5px; }
+  .rpLab{ color:#cfe0b8; font-size:15px; margin:10px 0 5px; }
+  #rpName,#rpMsg{ width:100%; font-size:16px; background:#2c3222; color:#ffe89a; border:1px solid #556048;
+    border-radius:4px; padding:7px 10px; font-family:inherit; }
+  #rpMsg{ height:130px; resize:vertical; }
+  #rpErr{ min-height:22px; margin-top:8px; font-size:15px; color:#ff8a7a; }
   .lvNode{ position:absolute; width:74px; height:74px; margin:-37px 0 0 -37px; border-radius:50%;
     display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer;
     font-weight:bold; font-size:17px; color:#f2efc9; z-index:2;
@@ -154,6 +159,8 @@
   #helpBtn{ font-size:18px; padding:8px 34px; background:#2c3222; color:#e8e6d8;
     border:1px solid #556048; border-radius:6px; cursor:pointer; }
   #helpBtn:hover{ background:#3a4230; }
+  #reportBtn{ font-size:18px; padding:8px 34px; background:#2c3222; color:#e8e6d8; border:1px solid #556048; border-radius:6px; cursor:pointer; }
+  #reportBtn:hover{ background:#3a4230; }
   #startBtn{ display:block; margin:9px auto 0; font-size:18px; padding:8px 34px;
     background:#6b5718; color:#ffe89a; border:1px solid #a98c2e; border-radius:6px; cursor:pointer; }
   #startBtn:hover{ background:#7d671f; }
@@ -256,10 +263,20 @@
   <div id="boardPanel" class="modal"><div class="box" style="min-width:720px;">
     <h3>排行榜（依關卡與進度；同進度先登錄者在前）<span id="bdSrc" style="font-size:14px;color:#cfe0b8;margin-left:8px"></span></h3>
     <table>
-      <thead><tr><th>#</th><th>名字</th><th>關卡</th><th>進度</th><th>金幣押注</th><th>金幣贏分</th><th>登錄時間</th></tr></thead>
+      <thead><tr><th>#</th><th>名字</th><th>等級</th><th>關卡</th><th>進度</th><th>金幣押注</th><th>金幣贏分</th><th>登錄時間</th></tr></thead>
       <tbody id="boardRows"></tbody>
     </table>
     <div class="row" style="justify-content:center"><button class="btn" id="bdClose">關閉</button></div>
+  </div></div>
+
+  <div id="reportDlg" class="modal"><div class="box" style="min-width:520px">
+    <h3>問題回報</h3>
+    <div class="rpLab">名字（選填）</div>
+    <input id="rpName" maxlength="20" placeholder="可不填">
+    <div class="rpLab">問題描述</div>
+    <textarea id="rpMsg" maxlength="1000" placeholder="遇到什麼狀況？在哪一關、做了什麼動作？"></textarea>
+    <div id="rpErr"></div>
+    <div class="row" style="justify-content:center"><button class="btn gold" id="rpSend">送出</button><button class="btn" id="rpCancel">取消</button></div>
   </div></div>
 
   <div id="lvupDlg" class="modal"><div class="box" style="min-width:440px;text-align:center">
@@ -297,6 +314,7 @@
       <div id="titleBtns">
         <button id="startBtn">開始遊戲</button>
         <button id="helpBtn">遊戲說明</button>
+        <button id="reportBtn">問題回報</button>
       </div>
     </div>
   </div>
@@ -450,7 +468,7 @@ const XP_TBL={soldier:1,para:1,runner:1,mg:1,shield:1,turret:1,tank:2,heli:3,bos
 const RW_TXT={2:'❤ 上限 +1 並補滿',3:'🦘 二段跳躍解鎖！落地前可再跳一次',4:'❤ 上限 +1 並補滿',
   5:'⚡ 閃電刃！小刀進化：威力與範圍加倍',6:'❤ 上限 +1 並補滿',7:'🏃 移動速度 +30%',
   8:'❤ 上限 +1 並補滿',9:'🗡 戰神！攻擊力 +5（所有武器）',10:'❤ 上限 +3 並補滿'};
-const XP_NEED=[120,200,290,370,460,540,630,710,800];   // 升級需求（11-21 定案）：不練功 1-1 結束 Lv2、1-10 結束 Lv8，Lv9/10 需重打
+const XP_NEED=[100,170,240,310,380,450,520,590,660];   // 升級需求（11-21 定案）：不練功 1-1 結束 Lv2、1-10 結束 Lv8，Lv9/10 需重打
 const xpNeed=l=>XP_NEED[Math.min(9,Math.max(1,l))-1];
 function gainXp(n){
   if(plvl>=10){ return; }
@@ -2747,10 +2765,10 @@ document.getElementById('ddOk').onclick=()=>{
   const wN=nameWidth(nm);
   if(!nm){ document.getElementById('ddErr').textContent='名字不能是空的'; return; }
   if(wN>16){ document.getElementById('ddErr').textContent='太長了：目前 '+wN+' 半形字（上限 16）'; return; }
-  board.push({n:nm,lv:LEVEL_NUM,d:runDist,b:stats.totalBet,w:stats.totalWin,t:Date.now()});
+  board.push({n:nm,pl:plvl,lv:LEVEL_NUM,d:runDist,b:stats.totalBet,w:stats.totalWin,t:Date.now()});
   board.sort((a,b)=> (b.lv||0)-(a.lv||0) || b.d-a.d || a.t-b.t); board=board.slice(0,50);
   saveBoard(); registered=true;
-  lastReg={n:nm,lv:LEVEL_NUM,d:runDist,b:stats.totalBet,w:stats.totalWin,t:Date.now()};
+  lastReg={n:nm,pl:plvl,lv:LEVEL_NUM,d:runDist,b:stats.totalBet,w:stats.totalWin,t:Date.now()};
   try{ boardUpP=fetch(BOARD_API,{method:'POST',body:JSON.stringify(lastReg)}).catch(()=>{}); }catch(e){ boardUpP=null; }   // 上傳全服榜（失敗不擋）
   pendingResume=(dlgMode==='death');
   deathDlg.style.display='none';
@@ -2765,10 +2783,11 @@ function renderBoard(list,src){
   document.getElementById('bdSrc').textContent= src==='net'?'🌐 全服榜':'（本機，全服連線中…）';
   document.getElementById('boardRows').innerHTML= list.length?
     list.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+String(r.n).replace(/[<>&]/g,'')+'</td>'+
+      '<td>'+(r.pl?r.pl:'—')+'</td>'+
       '<td>'+(r.lv?('1-'+r.lv):'—')+'</td>'+
       '<td>'+fmt(r.d)+'m（'+Math.round(100*r.d/TOTAL_M)+'%）</td><td>'+fmt(r.b)+'</td><td>'+fmt(r.w)+'</td>'+
       '<td>'+fmtT(r.t)+'</td></tr>').join('')
-    :'<tr><td colspan="7">還沒有人留名，等你寫下第一筆</td></tr>';
+    :'<tr><td colspan="8">還沒有人留名，等你寫下第一筆</td></tr>';
 }
 function openBoard(mode){
   boardMode=mode||'view'; dlgHold=true;
@@ -2882,6 +2901,32 @@ function openLvup(){
 }
 document.getElementById('luOk').onclick=()=>{ document.getElementById('lvupDlg').style.display='none'; dlgHold=false; };
 document.getElementById('bCheat').onclick=()=>{ if(!dlgHold) openCheat(); };
+// ---- 問題回報（寫進同一份試算表的「問題回報」分頁）----
+const reportDlg=document.getElementById('reportDlg');
+function openReport(){ if(dlgHold) return; dlgHold=true;
+  document.getElementById('rpErr').textContent=''; document.getElementById('rpErr').style.color='#ff8a7a';
+  document.getElementById('rpSend').disabled=false;
+  reportDlg.style.display='flex'; document.getElementById('rpMsg').focus(); }
+function closeReport(){ reportDlg.style.display='none'; dlgHold=false; }
+document.getElementById('reportBtn').onclick=openReport;
+document.getElementById('rpCancel').onclick=closeReport;
+reportDlg.addEventListener('pointerdown',e=>{ if(e.target===reportDlg) closeReport(); });
+['rpName','rpMsg'].forEach(id=>document.getElementById(id).addEventListener('keydown',ev=>ev.stopPropagation()));
+document.getElementById('rpSend').onclick=()=>{
+  const who=document.getElementById('rpName').value.trim().slice(0,20);
+  const msg=document.getElementById('rpMsg').value.trim();
+  const er=document.getElementById('rpErr');
+  if(!msg){ er.style.color='#ff8a7a'; er.textContent='請先寫下問題描述'; return; }
+  const btn=document.getElementById('rpSend'); btn.disabled=true;
+  er.style.color='#cfe0b8'; er.textContent='送出中…';
+  const body=JSON.stringify({type:'report', who, msg:msg.slice(0,1000), ver:document.title, ua:navigator.userAgent.slice(0,150)});
+  fetch(BOARD_API,{method:'POST',body}).then(r=>r.json().catch(()=>({ok:1}))).then(res=>{   // 回應讀不到內容＝已送達；連線失敗才算失敗
+    if(res&&res.ok===0){ er.style.color='#ff8a7a'; er.textContent='送出失敗，請稍後再試'; btn.disabled=false; return; }
+    er.style.color='#9fe0a0'; er.textContent='✅ 感謝回報！已送出';
+    document.getElementById('rpMsg').value='';
+    setTimeout(closeReport,1300);
+  }).catch(()=>{ er.style.color='#ff8a7a'; er.textContent='送出失敗，請稍後再試'; btn.disabled=false; });
+};
 document.getElementById('cheatOk').onclick=doCheat;
 document.getElementById('cheatClose').onclick=closeCheat;
 cheatDlg.addEventListener('pointerdown',e=>{ if(e.target===cheatDlg) closeCheat(); });
