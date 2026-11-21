@@ -10,8 +10,8 @@
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; background:#14170f; color:#e8e6d8;
     font-family:"Microsoft JhengHei","PingFang TC",sans-serif; overflow:hidden; }
-  #page{ display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; }
-  #wrap{ position:relative; width:min(96vw, 1240px); }   /* 預設解析度整體放大 */
+  #page{ display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; padding-bottom:36px; }   /* 底部留給操作說明 */
+  #wrap{ position:relative; width:min(96vw, 1240px, calc((100vh - 48px)*1.7778)); }   /* 寬度同時受高度上限：底部讓位給操作說明 */
   canvas{ width:100%; display:block; background:#9aa877; border:3px solid #2c3222;
     border-radius:6px; }
   .hud{ position:absolute; pointer-events:none; text-shadow:0 1px 3px rgba(0,0,0,.7); }
@@ -33,7 +33,7 @@
     border-radius:4px; font-size:15px; padding:6px 12px; cursor:pointer; }
   .btn:hover{ background:#3a4230; }
   .btn.gold{ background:#6b5718; border-color:#a98c2e; color:#ffe89a; }
-  #hint{ position:absolute; left:0; right:0; bottom:6px; text-align:center;
+  #hint{ position:absolute; left:0; right:0; bottom:9px; text-align:center;
     font-size:15px; color:rgba(240,240,220,.85); pointer-events:none; text-shadow:0 1px 2px #000; }
   /* 統計面板（左側） */
   #stats{ position:absolute; left:14px; top:168px; width:344px; background:rgba(18,22,12,.93);
@@ -459,6 +459,8 @@ const sndHit   =()=>beep(300,0.05,'triangle',0.03);
 const sndBoom  =()=>beep(110,0.28,'sawtooth',0.05);
 const sndHurt  =()=>{ beep(180,0.18,'sawtooth',0.06); beep(130,0.22,'sawtooth',0.05,0.08); };
 const sndPick  =()=>{ beep(880,0.07,'square',0.04); beep(1175,0.1,'square',0.04,0.07); };
+const sndUI    =()=>beep(640,0.04,'triangle',0.06);            // 按鈕點擊
+const sndDeny  =()=>beep(170,0.09,'sawtooth',0.045);           // 不可用（鎖住的關卡）
 function sndWin(mult){
   const base= mult>=15?523:659;
   beep(base,0.09,'square',0.045,0);
@@ -2797,6 +2799,12 @@ function doCheat(){
       m.textContent='🙏 貴人相助！'+nH+' 位人質現身'; sndCheat();
     }
   }
+  else if(c==='iseedeadpeople'||c==='iseedeadpoeple'){   // 開圖（支援原版與常見手滑拼法）
+    for(let i=0;i<9;i++) levelsCleared[i]=true;
+    saveLevels();
+    if(levelPanel.style.display==='block'){ buildLevelPanel(); updLvCoins(); }
+    m.textContent='🔍 開圖模式！全部關卡已解鎖'; sndCheat();
+  }
   else m.textContent='什麼事都沒發生…';
   if(m.textContent==='什麼事都沒發生…') beep(140,0.25,'sawtooth',0.05);
   document.getElementById('cheatIn').value=''; updHUD(); updLvCoins();
@@ -2852,6 +2860,14 @@ document.getElementById('bLevels').onclick=()=>{   // 二段確認：避免誤�
   else{ lvConfirmT=performance.now(); flashMsg('再按一次「選關」確認離開本關','#ffd84d',1.6); }
 };
 document.getElementById('startBtn').onclick=()=>{ initAudio(); openLevelSelect(); };
+// 全站按鈕音效（事件代理：按鈕/關卡圓鈕/✕ 一次涵蓋；第一下點擊也先初始化音訊）
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button, .lvNode, #helpX');
+  if(!b) return;
+  initAudio();
+  if(b.classList&&b.classList.contains('lock')) sndDeny();
+  else sndUI();
+},true);
 
 // ---- 啟動 ----
 LEVEL_SEED=(Math.random()*4294967296)>>>0;   // 開場即隨機地圖
