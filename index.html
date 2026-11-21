@@ -535,11 +535,11 @@ const sndSwing =()=>beep(230,0.1,'sawtooth',0.035);                 // 小刀揮
 const sndSwingE=()=>{ beep(520,0.06,'sawtooth',0.04); beep(1240,0.09,'square',0.03,0.03); }; // 閃電刃
 const sndDeny  =()=>beep(170,0.09,'sawtooth',0.045);           // 不可用（鎖住的關卡）
 function sndWin(mult){
-  const base= mult>=12?523:659;   // ×12（榴彈兵）以上＝大獎音
+  const base= mult>=20?523:659;   // ×20 以上（戰車／直升機／BOSS）＝大獎音
   beep(base,0.09,'square',0.045,0);
   beep(base*1.25,0.09,'square',0.045,0.08);
   beep(base*1.5,0.14,'square',0.05,0.16);
-  if(mult>=12) beep(base*2,0.2,'square',0.05,0.24);
+  if(mult>=20) beep(base*2,0.2,'square',0.05,0.24);
 }
 
 // ---- 工具 ----
