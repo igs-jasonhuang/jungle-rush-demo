@@ -115,7 +115,7 @@
   #wrap:has(#levelPanel[style*="block"]) #hudL, #wrap:has(#levelPanel[style*="block"]) #hudR,
   #wrap:has(#levelPanel[style*="block"]) #btns{ visibility:hidden; }   /* 選關畫面開著＝藏遊戲中介面，避免透出疊字 */
   #lvReset.armed{ background:#7a2a20; border-color:#c0503c; color:#ffd8d0; }
-  #lvToast{ position:absolute; right:16px; top:54px; font-size:15px; color:#ffb4a8; text-shadow:0 1px 4px #000; text-align:right; }
+  #lvToast{ position:absolute; right:16px; top:54px; font-size:15px; line-height:1.6; color:#ffb4a8; text-shadow:0 1px 4px #000; text-align:left; }
   #cheatIn{ width:300px; font-size:17px; background:#2c3222; color:#ffe89a; border:1px solid #556048;
     border-radius:4px; padding:7px 10px; }
   #cheatMsg{ margin-top:10px; min-height:22px; color:#ffe89a; font-size:15.5px; }
@@ -2955,7 +2955,7 @@ function buildLevelPanel(){
     const n=i+1, el=document.createElement('div');
     el.className='lvNode'+(levelsCleared[i]?' clear':'')+(n===un&&!levelsCleared[i]?' cur':'')+(n>un?' lock':'');
     el.style.left=p[0]+'%'; el.style.top=p[1]+'%';
-    el.innerHTML='1-'+n+'<span class="st">'+(levelsCleared[i]?'★':(n>un?'🔒':''))+'</span>';
+    el.innerHTML='1-'+n+'<span class="st">'+(levelsCleared[i]?'✔':(n>un?'🔒':''))   // 通關＝打勾（日後做 1~3 星通關條件再換）+'</span>';
     if(n<=un) el.onclick=()=>startLevel(n);
     levelPanel.appendChild(el);
   });
@@ -2984,7 +2984,11 @@ function startLevel(n){
   running=true; lastT=performance.now();
 }
 function updLvCoins(){ const el=document.getElementById('lvCoins'); if(el) el.innerHTML='金幣 <b>'+fmt(coins)+'</b>'; }
-// ---- 重置進度（兩段確認；等級經驗＋關卡進度歸零，金幣不動）----
+// ---- 重置進度（兩段確認；等級經驗＋關卡進度＋金幣全部回到初始）----
+function alignToast(){   // 提示文字左緣對齊「重置進度」按鈕左緣
+  const b=document.getElementById('lvReset'), t=document.getElementById('lvToast');
+  t.style.left=(b.getBoundingClientRect().left-levelPanel.getBoundingClientRect().left)+'px';
+}
 let lvResetT=-1e9, lvResetTimer=null;
 function disarmReset(){ const b=document.getElementById('lvReset'); b.classList.remove('armed'); b.textContent='重置進度';
   const t=document.getElementById('lvToast'); if(t.dataset.k==='warn') t.textContent=''; }
@@ -2996,16 +3000,17 @@ document.getElementById('lvReset').onclick=()=>{
     lvResetT=-1e9;
     plvl=1; pxp=0; pendingRw=[]; saveLvl();
     levelsCleared=[]; saveLevels();
+    coins=START_COINS; saveWallet();
     b.classList.remove('armed'); b.textContent='重置進度';
     buildLevelPanel(); updLvCoins();
-    t.dataset.k='done'; t.style.color='#9fe0a0'; t.textContent='已重置：等級 1、關卡回到 1-1';
+    t.dataset.k='done'; t.style.color='#9fe0a0'; alignToast(); t.textContent='已重置：等級 1、關卡回到 1-1、金幣 '+fmt(START_COINS);
     lvResetTimer=setTimeout(()=>{ t.textContent=''; },2500);
     return;
   }
   lvResetT=performance.now();
   b.classList.add('armed'); b.textContent='⚠ 再按一次確認';
   t.dataset.k='warn'; t.style.color='#ffb4a8';
-  t.textContent='將重置角色等級、經驗與關卡進度（金幣不變）';
+  alignToast(); t.textContent='將重置角色等級、經驗、關卡進度與金幣（回到 '+fmt(START_COINS)+'）';
   lvResetTimer=setTimeout(disarmReset,3000);
 };
 document.getElementById('lvBack').onclick=()=>{ levelPanel.style.display='none'; document.getElementById('intro').style.display='flex'; };
