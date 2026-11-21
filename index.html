@@ -106,11 +106,16 @@
   #lvPath{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }   /* 裝飾層：不吃點擊 */
   #lvBack{ position:absolute; left:14px; top:12px; }
   #lvTop{ position:absolute; right:16px; top:12px; display:flex; gap:8px; align-items:center; }
-  #lvStats{ position:absolute; left:16px; top:56px; text-align:left; font-size:16px; line-height:2;
+  #lvStats{ position:absolute; left:16px; top:84px; text-align:left; font-size:16px; line-height:2;
     color:#e8e6d8; text-shadow:0 1px 4px #000; }
   #lvStats b{ color:var(--gold); }
   #lvTop .btn{ pointer-events:auto; }
-  #lvCoins{ color:var(--gold); font-weight:bold; font-size:19px; margin-right:8px; text-shadow:0 1px 3px #000; }
+  #lvCoins{ position:absolute; left:16px; top:54px; font-size:16px; color:#e8e6d8; text-shadow:0 1px 4px #000; }
+  #lvCoins b{ color:var(--gold); }
+  #wrap:has(#levelPanel[style*="block"]) #hudL, #wrap:has(#levelPanel[style*="block"]) #hudR,
+  #wrap:has(#levelPanel[style*="block"]) #btns{ visibility:hidden; }   /* 選關畫面開著＝藏遊戲中介面，避免透出疊字 */
+  #lvReset.armed{ background:#7a2a20; border-color:#c0503c; color:#ffd8d0; }
+  #lvToast{ position:absolute; right:16px; top:54px; font-size:15px; color:#ffb4a8; text-shadow:0 1px 4px #000; text-align:right; }
   #cheatIn{ width:300px; font-size:17px; background:#2c3222; color:#ffe89a; border:1px solid #556048;
     border-radius:4px; padding:7px 10px; }
   #cheatMsg{ margin-top:10px; min-height:22px; color:#ffe89a; font-size:15.5px; }
@@ -294,15 +299,17 @@
 
   <div id="levelPanel">
     <h2>選擇關卡</h2>
+    <div id="lvCoins"></div>
     <div id="lvStats"></div>
+    <div id="lvToast"></div>
     <div id="lvTop">
-      <span id="lvCoins"></span>
+      <button class="btn" id="lvReset">重置進度</button>
       <button class="btn" id="lvHelp">遊戲說明</button>
       <button class="btn" id="lvBoard">排行榜</button>
       <button class="btn gold" id="lvCheat">金手指</button>
     </div>
     <svg id="lvPath" viewBox="0 0 1000 420" preserveAspectRatio="none"></svg>
-    <button class="btn" id="lvBack">回封面</button>
+    <button class="btn" id="lvBack">回到標題</button>
   </div>
 
   <div id="intro">
@@ -2976,7 +2983,31 @@ function startLevel(n){
   fullReset(true);
   running=true; lastT=performance.now();
 }
-function updLvCoins(){ const el=document.getElementById('lvCoins'); if(el) el.textContent='金幣 '+fmt(coins); }
+function updLvCoins(){ const el=document.getElementById('lvCoins'); if(el) el.innerHTML='金幣 <b>'+fmt(coins)+'</b>'; }
+// ---- 重置進度（兩段確認；等級經驗＋關卡進度歸零，金幣不動）----
+let lvResetT=-1e9, lvResetTimer=null;
+function disarmReset(){ const b=document.getElementById('lvReset'); b.classList.remove('armed'); b.textContent='重置進度';
+  const t=document.getElementById('lvToast'); if(t.dataset.k==='warn') t.textContent=''; }
+document.getElementById('lvReset').onclick=()=>{
+  if(dlgHold) return;
+  const b=document.getElementById('lvReset'), t=document.getElementById('lvToast');
+  clearTimeout(lvResetTimer);
+  if(performance.now()-lvResetT<3000){
+    lvResetT=-1e9;
+    plvl=1; pxp=0; pendingRw=[]; saveLvl();
+    levelsCleared=[]; saveLevels();
+    b.classList.remove('armed'); b.textContent='重置進度';
+    buildLevelPanel(); updLvCoins();
+    t.dataset.k='done'; t.style.color='#9fe0a0'; t.textContent='已重置：等級 1、關卡回到 1-1';
+    lvResetTimer=setTimeout(()=>{ t.textContent=''; },2500);
+    return;
+  }
+  lvResetT=performance.now();
+  b.classList.add('armed'); b.textContent='⚠ 再按一次確認';
+  t.dataset.k='warn'; t.style.color='#ffb4a8';
+  t.textContent='將重置角色等級、經驗與關卡進度（金幣不變）';
+  lvResetTimer=setTimeout(disarmReset,3000);
+};
 document.getElementById('lvBack').onclick=()=>{ levelPanel.style.display='none'; document.getElementById('intro').style.display='flex'; };
 document.getElementById('lvHelp').onclick=()=>{ if(!dlgHold) openHelp(); };
 document.getElementById('lvBoard').onclick=()=>{ if(!dlgHold) openBoard('view'); };
