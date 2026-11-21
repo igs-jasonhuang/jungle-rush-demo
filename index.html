@@ -449,18 +449,19 @@ function spdMul(){ return (plvl>=7?1.3:1)*(cheatSpeed?2:1); }
 const XP_TBL={soldier:1,para:1,runner:1,mg:1,shield:1,turret:1,tank:2,heli:3,boss:10};
 const RW_TXT={2:'❤ 上限 +1 並補滿',3:'🦘 二段跳躍解鎖！落地前可再跳一次',4:'❤ 上限 +1 並補滿',
   5:'⚡ 閃電刃！小刀進化：威力與範圍加倍',6:'❤ 上限 +1 並補滿',7:'🏃 移動速度 +30%',
-  8:'❤ 上限 +1 並補滿',9:'🗡 攻擊力 +5（所有武器）',10:'❤ 上限 +3 並補滿'};
+  8:'❤ 上限 +1 並補滿',9:'🗡 戰神！攻擊力 +5（所有武器）',10:'❤ 上限 +3 並補滿'};
+const xpNeed=l=>24+4*l;                                // 升級需求：28/32/36/40/44/48/52/56/60
 function gainXp(n){
   if(plvl>=10){ return; }
   pxp+=n;
-  while(pxp>=50&&plvl<10){
-    pxp-=50; plvl++;
+  while(plvl<10&&pxp>=xpNeed(plvl)){
+    pxp-=xpNeed(plvl); plvl++;
     pendingRw.push('等級 <b>'+plvl+'</b>　'+(RW_TXT[plvl]||''));
     maxHearts=Math.max(maxHearts,heartCap()); hearts=maxHearts; updHearts();   // 升級補滿愛心
     luFxT=1.1; floater('LEVEL UP！',player.x,player.y-88,'#8fd0ff',24);
     sndCheat();
   }
-  if(plvl>=10) pxp=Math.min(pxp,50);
+  if(plvl>=10) pxp=Math.min(pxp,xpNeed(9));
   saveLvl();
 }
 const BOARD_API='https://script.google.com/macros/s/AKfycbwBqap62ShxLLaq5Q1TW5d-nGkU1DjB0Ur2XYiOQ3AsSlxNcKLsOi_CdHY6Ht0c_aib0Q/exec';   // 全服榜收件端（Google 試算表）
@@ -658,11 +659,11 @@ function buildLevel(){
         for(const c of cands){ rr-=c[1]; if(rr<=0){ key=c[0]; break; } }
         enemyDefs.push({key, x:ex});
       }
-      // 關卡難度：1-1＝100~130、每關 +5（d=1+(S-100)/15；1-1 即原始曲線、1-10＝145~175）
-      ex+=(215+rnd()*300)/(1+(5*(LEVEL_NUM-1)+30*(ex/WORLD_W))/15);
+      // 關卡難度：起點每關+5、終點每關+10（1-1＝100~130、1-2＝105~140…1-10＝145~220）
+      ex+=(215+rnd()*300)/(1+(5*(LEVEL_NUM-1)+(30+5*(LEVEL_NUM-1))*(ex/WORLD_W))/15);
     }
   }
-  for(let hx=2400; hx<WORLD_W-900; hx+=(1400+rnd()*900)/(1+(5*(LEVEL_NUM-1)+30*(hx/WORLD_W))/15)){
+  for(let hx=2400; hx<WORLD_W-900; hx+=(1400+rnd()*900)/(1+(5*(LEVEL_NUM-1)+(30+5*(LEVEL_NUM-1))*(hx/WORLD_W))/15)){
     const s=segAt(hx), gy=s?s.top:BASE_Y;
     enemyDefs.push({key:'heli', x:hx, y:Math.max(140,gy-190)});
   }
@@ -2579,7 +2580,7 @@ function updHUD(){
   coinTxt.style.color = coins<BET ? '#ff7a6a' : '#ffd84d';
   document.getElementById('distTxt').textContent='1-'+LEVEL_NUM+'｜推進 '+fmt(runDist)+'m｜最遠 '+fmt(bestDist)+'m';
   document.getElementById('xpLv').textContent='Lv '+plvl+(plvl>=10?' MAX':'');
-  document.getElementById('xpFill').style.width=(plvl>=10?100:Math.min(100,pxp*2))+'%';
+  document.getElementById('xpFill').style.width=(plvl>=10?100:Math.min(100,Math.round(pxp/xpNeed(plvl)*100)))+'%';
   document.getElementById('pbFill').style.width=Math.min(100,runDist/TOTAL_M*100)+'%';
   document.getElementById('pbBest').style.left=Math.min(100,bestDist/TOTAL_M*100)+'%';
   document.getElementById('wpnTxt').textContent = player.weapon==='rifle'
@@ -2907,10 +2908,14 @@ function buildLevelPanel(){
   });
   const st=document.getElementById('lvStats');
   if(st){
-    st.innerHTML='等級 <b>'+plvl+'</b>　經驗 <b>'+(plvl>=10?'MAX':(pxp+'/50'))+'</b><br>'+
+    const sk=[];
+    if(plvl>=3) sk.push('🦘二段跳');
+    if(plvl>=5) sk.push('⚡閃電刃');
+    if(plvl>=7) sk.push('🏃疾走');
+    if(plvl>=9) sk.push('🗡戰神');
+    st.innerHTML='等級 <b>'+plvl+'</b>　經驗 <b>'+(plvl>=10?'MAX':(pxp+'/'+xpNeed(plvl)))+'</b><br>'+
       '❤ 上限 <b>'+heartCap()+'</b>（過關會補滿）<br>'+
-      '技能：🦘二段跳 '+(plvl>=3?'✅':'🔒Lv3')+'｜⚡閃電刃 '+(plvl>=5?'✅':'🔒Lv5')+
-      '｜🏃疾走 '+(plvl>=7?'✅':'🔒Lv7')+'｜🗡攻擊+5 '+(plvl>=9?'✅':'🔒Lv9');
+      '技能：'+(sk.length?sk.join('｜'):'無');
   }
 }
 function openLevelSelect(){
