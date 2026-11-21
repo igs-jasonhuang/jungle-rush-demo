@@ -350,7 +350,7 @@
         <tr><td>快刀兵</td><td class="mult5">×3</td><td>30%</td><td>300</td></tr>
         <tr><td>機槍兵</td><td class="mult5">×6</td><td>15%</td><td>600</td></tr>
         <tr><td>盾牌兵</td><td class="mult10">×9</td><td>10%</td><td>900</td></tr>
-        <tr><td>榴彈兵</td><td class="mult10">×15</td><td>6%</td><td>1,500</td></tr>
+        <tr><td>榴彈兵</td><td class="mult10">×12</td><td>7.5%</td><td>1,200</td></tr>
         <tr><td>戰車</td><td class="mult15">×20</td><td>4.5%</td><td>2,000</td></tr>
         <tr><td>直升機</td><td class="mult30">×30</td><td>3%</td><td>3,000</td></tr>
         <tr><td>BOSS</td><td class="qm">？</td><td class="qm">？</td><td class="qm">？</td></tr>
@@ -399,7 +399,7 @@ const JUMP_BUF    = 0.13;    // 跳躍緩衝：落地前先按 W 也算
 const ENEMY_TYPES = [
   { key:'soldier', name:'步兵',   mult:1,  hp:2,  w:26, h:46, spd:62, fly:false, fireCd:2.8, badge:'#cfcfcf' },
   { key:'shield',  name:'盾牌兵', mult:9,  hp:6,  w:40, h:46, spd:40, fly:false, fireCd:3.6, badge:'#7ed67e' },
-  { key:'turret',  name:'榴彈兵', mult:15, hp:12, w:44, h:52, spd:0,  fly:false, fireCd:2.1, badge:'#6db1ff' },   // h=52：判定涵蓋砲手上半身（修「打胸口沒反應」）
+  { key:'turret',  name:'榴彈兵', mult:12, hp:12, w:44, h:52, spd:0,  fly:false, fireCd:2.1, badge:'#6db1ff' },   // h=52：判定涵蓋砲手上半身（修「打胸口沒反應」）
   { key:'tank',    name:'戰車',   mult:20, hp:16, w:80, h:60, spd:20, fly:false, fireCd:3.8, badge:'#c58cff' },
   { key:'heli',    name:'直升機', mult:30, hp:30, w:92, h:50, spd:40, fly:true,  fireCd:2.6, badge:'#ffd84d' },  // 攻擊＝3 連射
   // 後段新敵種（出現門檻見 buildLevel）：快刀兵＝只用小刀、速度快；機槍兵＝5 連射
@@ -535,11 +535,11 @@ const sndSwing =()=>beep(230,0.1,'sawtooth',0.035);                 // 小刀揮
 const sndSwingE=()=>{ beep(520,0.06,'sawtooth',0.04); beep(1240,0.09,'square',0.03,0.03); }; // 閃電刃
 const sndDeny  =()=>beep(170,0.09,'sawtooth',0.045);           // 不可用（鎖住的關卡）
 function sndWin(mult){
-  const base= mult>=15?523:659;
+  const base= mult>=12?523:659;   // ×12（榴彈兵）以上＝大獎音
   beep(base,0.09,'square',0.045,0);
   beep(base*1.25,0.09,'square',0.045,0.08);
   beep(base*1.5,0.14,'square',0.05,0.16);
-  if(mult>=15) beep(base*2,0.2,'square',0.05,0.24);
+  if(mult>=12) beep(base*2,0.2,'square',0.05,0.24);
 }
 
 // ---- 工具 ----
